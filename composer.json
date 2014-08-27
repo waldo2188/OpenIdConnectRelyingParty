@@ -27,6 +27,7 @@
         "sensio/distribution-bundle": "~3.0",
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
+        "jms/security-extra-bundle": "~1.2",
         
         "kriswallsmith/buzz": "~0.7",
         "gree/jose": "~0.1"

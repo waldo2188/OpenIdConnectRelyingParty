@@ -10,3 +10,10 @@ security:
 
         default:
             anonymous: ~
+            
+        secured_area:
+            anonymous: ~
+            pattern:    ^/
+    
+    access_control:
+        - { path: ^/private, roles: ROLE_ADMIN }

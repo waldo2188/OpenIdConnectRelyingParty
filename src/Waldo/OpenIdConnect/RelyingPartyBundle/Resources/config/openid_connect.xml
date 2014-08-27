@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    
+    <parameters>
+        <parameter key="waldo_oic_rp.authentication.listener.class">Waldo\OpenIdConnect\RelyingPartyBundle\Example</parameter>
+        <parameter key="waldo_oic_rp.provider.class">Waldo\OpenIdConnect\RelyingPartyBundle\Example</parameter>
+    </parameters>
+
+    <services>
+        <service id="waldo_oic_rp.authentication.listener" class="%waldo_oic_rp.authentication.listener.class%"
+                 parent="security.authentication.listener.abstract" public="false" abstract="true" />
+        <service id="waldo_oic_rp.authentication.provider" class="%waldo_oic_rp.provider.class%" public="false" />
+    </services>
+    
+</container>

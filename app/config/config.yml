@@ -67,3 +67,14 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+waldo_open_id_connect_relying_party:
+    base_url: http://localhost/OIC-RP/
+    client_id: my_client_id
+    client_secret: my_client_secret
+    scope: openid profif
+    endpoints_url: 
+        authorisation: http://localhost/
+        token: http://localhost/
+        userinfo: http://localhost/
+        
