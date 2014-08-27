@@ -1,0 +1,4 @@
+waldo_open_id_connect_relying_party:
+    resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing.xml"
+    prefix:   /
+
