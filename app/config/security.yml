@@ -8,12 +8,14 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        default:
-            anonymous: ~
-            
         secured_area:
+            pattern: ^/
             anonymous: ~
-            pattern:    ^/
+            openidconnect:
+#                use_forward: true
+                login_path:        /login
+                failure_path:      /login
     
     access_control:
         - { path: ^/private, roles: ROLE_ADMIN }
+        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Waldo\OpenIdConnect\RelyingPartyBundle\Security\Http\Firewall\Token;
+namespace Waldo\OpenIdConnect\RelyingPartyBundle\Security\Http\Firewall;
 
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Code\Authentication\Token\OICToken;
 use Symfony\Component\Security\Http\Firewall\AbstractAuthenticationListener;
@@ -19,6 +19,12 @@ class OICListener extends AbstractAuthenticationListener
      */
     protected function attemptAuthentication(Request $request)
     {
+        echo "<pre>OICListener:";
+        var_dump($request);
+        echo "</pre>";exit;
+
+
+
         //TODO extract idToken and accessToken
         $idToken = null;
         $accessToken = null;

@@ -3,7 +3,10 @@
 namespace Waldo\OpenIdConnect\RelyingPartyBundle\DependencyInjection\Security\Factory;
 
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AbstractFactory;
+use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * OICFactory
@@ -30,14 +33,31 @@ class OICFactory extends AbstractFactory
      */
     protected function createAuthProvider(ContainerBuilder $container, $id, $config, $userProviderId)
     {
-        $providerId = 'security.authentication.provider.openid_connect.' . $id;
-        $this->createResourceOwnerMap($container, $id, $config);
-        $container
-                ->setDefinition($providerId, new DefinitionDecorator('openid_connect.security.authentication.provider'))
-                ->replaceArgument(0, $userProviderId)
-        ;
+        $providerId = 'security.authentication.provider.oic_rp.' . $id;
         
+        $container
+                ->setDefinition($providerId, new DefinitionDecorator('waldo_oic_rp.authentication.provider'))
+                ->addArgument(new Reference($userProviderId))
+        ;
+
         return $providerId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function createEntryPoint($container, $id, $config, $defaultEntryPoint)
+    {
+        $entryPointId = 'security.authentication.entrypoint.oic_rp.' . $id;
+
+        $container
+                ->setDefinition($entryPointId, new DefinitionDecorator('waldo_oic_rp.authentication.entrypoint'))
+                ->addArgument($config['login_path'])
+                ->addArgument($config['use_forward'])
+                ->addArgument(new Reference('waldo_oic_rp.resource_owner.generic'))
+        ;
+
+        return $entryPointId;
     }
 
     /**
@@ -45,11 +65,13 @@ class OICFactory extends AbstractFactory
      */
     protected function getListenerId()
     {
-        return 'security.authentication.listener.openid_connect';
+        return 'waldo_oic_rp.authentication.listener';
     }
 
     /**
      * {@inheritDoc}
+     * Allow to add a custom configuration in a firewall's configuration 
+     * in the security.yml file.
      */
     public function getKey()
     {

@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="waldo_open_id_connect_relying_party_homepage" path="/hello/{name}">
-        <default key="_controller">WaldoOpenIdConnectRelyingPartyBundle:Default:index</default>
+    <route id="waldo_oic_rp_redirect" pattern="/">
+        <default key="_controller">WaldoOpenIdConnectRelyingPartyBundle:Connect:redirectToService</default>
     </route>
 </routes>

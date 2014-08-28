@@ -6,14 +6,32 @@
 
     
     <parameters>
-        <parameter key="waldo_oic_rp.authentication.listener.class">Waldo\OpenIdConnect\RelyingPartyBundle\Example</parameter>
-        <parameter key="waldo_oic_rp.provider.class">Waldo\OpenIdConnect\RelyingPartyBundle\Example</parameter>
+        <parameter key="waldo_oic_rp.authentication.listener.class">Waldo\OpenIdConnect\RelyingPartyBundle\Security\Http\Firewall\OICListener</parameter>
+        <parameter key="waldo_oic_rp.authentication.provider.class">Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Provider\OICProvider</parameter>
+        <parameter key="waldo_oic_rp.authentication.entrypoint.class">Waldo\OpenIdConnect\RelyingPartyBundle\Security\Http\EntryPoint\OICEntryPoint</parameter>
+        
+        <parameter key="waldo_oic_rp.abstract_resource_owner.generic.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\AbstractGenericOICResourceOwner</parameter>
+        <parameter key="waldo_oic_rp.resource_owner.generic.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\GenericOICResourceOwner</parameter>
     </parameters>
 
     <services>
         <service id="waldo_oic_rp.authentication.listener" class="%waldo_oic_rp.authentication.listener.class%"
                  parent="security.authentication.listener.abstract" public="false" abstract="true" />
-        <service id="waldo_oic_rp.authentication.provider" class="%waldo_oic_rp.provider.class%" public="false" />
+        
+        <service id="waldo_oic_rp.authentication.provider" class="%waldo_oic_rp.authentication.provider.class%" public="false" />
+        
+        <service id="waldo_oic_rp.authentication.entrypoint" class="%waldo_oic_rp.authentication.entrypoint.class%" public="false" abstract="true">
+            <argument type="service" id="http_kernel" />
+            <argument type="service" id="security.http_utils" />
+        </service>
+        
+        <!-- Resource owners -->
+
+        <service id="waldo_oic_rp.abstract_resource_owner.generic" abstract="true">
+            <argument type="service" id="security.http_utils" />
+            <argument type="collection" /><!-- options -->
+        </service>
+        
     </services>
     
 </container>
