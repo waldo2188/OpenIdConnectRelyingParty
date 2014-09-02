@@ -180,9 +180,9 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         
         $this->httpClient->setOption(CURLOPT_USERPWD, $this->options['client_id'].':'.$this->options['client_secret']);
         $this->httpClient->send($request, $response);
-        
+
         $content = $this->handleHttpClientResponse($response);
-        
+
         $content['id_token'] = \JOSE_JWT::decode($content['id_token']);
         
         // Apply validation describe here -> http://openid.net/specs/openid-connect-basic-1_0.html#IDTokenValidation
@@ -222,7 +222,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $this->httpClient->send($request, $response);
         
         //TODO Validate data
-                   
+        
         $content = $this->handleHttpClientResponse($response);
         
         $oicToken->setRawUserinfo($content);
@@ -312,6 +312,9 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         //TODO add a log trace
         if(array_key_exists('error', $content)) {
             switch ($content['error']) {
+                case 'invalid request':
+                    throw new OICException\InvalidRequestException($content['error_description']);
+                    break;
                 case 'invalid_request':
                     throw new OICException\InvalidRequestException($content['error_description']);
                     break;
