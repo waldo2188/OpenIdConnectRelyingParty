@@ -11,7 +11,6 @@ use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\AbstractG
  */
 class GenericOICResourceOwner extends AbstractGenericOICResourceOwner
 {
-    
 
     /**
      * {@inheritDoc}

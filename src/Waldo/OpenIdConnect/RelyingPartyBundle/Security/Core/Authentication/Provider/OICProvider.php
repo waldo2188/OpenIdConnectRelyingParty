@@ -2,11 +2,12 @@
 
 namespace Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Provider;
 
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Code\Authentication\Token\OICToken;
+use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-//use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\User\OICUserProvider;
 
 /**
  * OICProvider
@@ -30,16 +31,36 @@ class OICProvider implements AuthenticationProviderInterface
      */
     public function authenticate(TokenInterface $token)
     {
-        echo "<pre>:OICProvider";
+     
+        echo "<pre>OICProvider token:1:";
         var_dump($token);
         echo "</pre>";
 
-        exit;
+
+
         $user = $this->userProvider->loadUserByUsername($token->getUsername());
 
-        return new OICToken($token->getIdToken(), $token->getAccessToken(), $user->getRoles());
-
-//        throw new Authenti<cationException('The authentication failed.');
+        if($user->getUsername() === $token->getUsername()) {
+            
+            if($this->userProvider instanceof OICUserProvider) {
+//                $user = $token->getUser();
+                
+                echo "<pre>OICProvider token:";
+                var_dump($token);
+                echo "</pre>";exit;
+                
+            }
+            
+            $relodedToken = new OICToken($user->getRoles());
+            $relodedToken->setAccessToken($token->getAccessToken());
+            $relodedToken->setIdToken($token->getIdToken());
+            $relodedToken->setRefreshToken($token->getRefreshToken());
+            $relodedToken->setUser($user);
+            
+            return $relodedToken;
+        }
+        
+        throw new AuthenticationException('The OpenID Connect authentication failed.');
     }
 
     /**
@@ -47,11 +68,6 @@ class OICProvider implements AuthenticationProviderInterface
      */
     public function supports(TokenInterface $token)
     {
-        echo "<pre>:OICProvider";
-        var_dump($token);
-        echo "</pre>";
-
-        exit;
         return $token instanceof OICToken;
     }
 

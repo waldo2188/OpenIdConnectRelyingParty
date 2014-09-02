@@ -1,7 +1,8 @@
 security:
     providers:
-        in_memory:
-            memory: ~
+        OICUserProvider: 
+            id: waldo_oic_rp.user.provider
+            
 
     firewalls:
         dev:
@@ -17,5 +18,5 @@ security:
                 failure_path:      /login
     
     access_control:
-        - { path: ^/private, roles: ROLE_ADMIN }
+        - { path: ^/private, roles: ROLE_OIC_USER }
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

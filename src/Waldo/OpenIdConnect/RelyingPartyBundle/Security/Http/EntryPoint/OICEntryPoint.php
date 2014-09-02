@@ -62,19 +62,19 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
     public function start(Request $request, AuthenticationException $authException = null)
     {
 
-        $this->resourceOwner->getAuthenticationEndpointUrl($request);
-//        
-//        if ($this->useForward) {
-//            $subRequest = $this->httpUtils->createRequest($request, $this->loginPath);
-//            $response = $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-//            if (200 === $response->getStatusCode()) {
-//                $response->headers->set('X-Status-Code', 401);
-//            }
-//            return $response;
-//        }
-//        
-//        //TODO redirect to the OP Whit a ResourceOwner
-//        return $this->httpUtils->createRedirectResponse($request, $this->loginPath);
+        $authenticationEndpointUrl = $this->resourceOwner->getAuthenticationEndpointUrl($request);
+
+        if ($this->useForward) {
+            $subRequest = $this->httpUtils->createRequest($request, $this->loginPath);
+            $response = $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+            if (200 === $response->getStatusCode()) {
+                $response->headers->set('X-Status-Code', 401);
+            }
+            return $response;
+        }
+        
+        //Create and return the redirection request to the OpenId Provider
+        return $this->httpUtils->createRedirectResponse($request, $authenticationEndpointUrl);
     }
 
 }

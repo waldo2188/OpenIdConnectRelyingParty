@@ -69,12 +69,14 @@ swiftmailer:
     spool:     { type: memory }
 
 waldo_oic_rp:
-    base_url: http://localhost/OIC-RP/
-    client_id: my_client_id
+    base_url: "%base_url%"
+    client_id: my_client_id_123
     client_secret: my_client_secret
+    issuer: "%oic_issuer%"
+    display: page
     scope: openid profile email address phone
     endpoints_url: 
-        authorisation: http://172.16.128.5/phpOp/
-        token: http://172.16.128.5/phpOp/
-        userinfo: http://172.16.128.5/phpOp/
+        authorisation: "%endpoints_url_authorisation%"
+        token: "%endpoints_url_token%"
+        userinfo: "%endpoints_url_userinfo%"
         

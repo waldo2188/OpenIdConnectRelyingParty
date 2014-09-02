@@ -15,17 +15,18 @@ class ConnectController extends Controller
     public function connectAction(Request $request)
     {
         echo "<pre>ConnectController:connectAction:";
-        var_dump($request);
+        var_dump($request->query->all());
+//        var_dump($request);
         echo "</pre>";
         exit;
     }
 
     public function redirectToServiceAction(Request $request)
     {
-        echo "<pre>ConnectController:connectAction:";
-        var_dump($request);
-        echo "</pre>";
-        exit;
+        
+        $this->get('waldo_oic_rp.resource_owner.generic')->authenticateUser($request);
+        
+        return $this->redirect($this->generateUrl("_private_page"));
     }
 
 }

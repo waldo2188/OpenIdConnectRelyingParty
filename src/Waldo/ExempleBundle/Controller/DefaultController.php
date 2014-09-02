@@ -20,12 +20,20 @@ class DefaultController extends Controller
     
     
     /**
-     * @Secure(roles="ROLE_ADMIN")
+     * @Secure(roles="ROLE_OIC_USER")
      * @Route("/private", name="_private_page")
      * @Template()
      */
     public function privateResouceAction()
     {
+        
+        echo "<pre>:";
+        var_dump($this->get('security.context')->getToken());
+        var_dump($this->get('security.context')->getToken()->getUser());
+        echo "</pre>";
+
+
+
         return array();
     }
 }
