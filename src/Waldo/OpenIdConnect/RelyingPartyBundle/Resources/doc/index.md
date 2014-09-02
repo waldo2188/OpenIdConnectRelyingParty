@@ -3,6 +3,19 @@
 Not yet implemented
 ===================
 
+Encryption / Decryption
+-----------------------
+
+Need to be implemented
+
+For now `Id Token Signed Response Alg` must be set to `RS256`
+
+In AbstractGenericOICResourceOwner, create a Request and Response type for
+http_client who abstract all the logic of Encryption / Decryption.
+Need to add all parameters like `Request Object Signing Alg` in config
+
+
+
 Client Prepares Authentication Request
 ---------------------------------------
 http://openid.net/specs/openid-connect-basic-1_0.html#AuthenticationRequest

@@ -33,7 +33,9 @@ class OICUserProvider implements UserProviderInterface
             throw new UnsupportedUserException(sprintf('Unsupported user class "%s"', get_class($user)));
         }
 
-        return $this->loadUserByUsername($user->getUsername());
+        //return $this->loadUserByUsername($user->getUsername());
+        
+        return $user;
     }
 
     /**

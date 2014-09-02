@@ -69,8 +69,10 @@ swiftmailer:
     spool:     { type: memory }
 
 waldo_oic_rp:
+    http_client:
+        timeout: 100
     base_url: "%base_url%"
-    client_id: my_client_id_123
+    client_id: "%client_id%"
     client_secret: my_client_secret
     issuer: "%oic_issuer%"
     display: page

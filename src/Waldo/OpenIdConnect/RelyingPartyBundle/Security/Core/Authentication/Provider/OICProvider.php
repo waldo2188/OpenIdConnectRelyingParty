@@ -31,31 +31,15 @@ class OICProvider implements AuthenticationProviderInterface
      */
     public function authenticate(TokenInterface $token)
     {
-     
-        echo "<pre>OICProvider token:1:";
-        var_dump($token);
-        echo "</pre>";
-
-
-
         $user = $this->userProvider->loadUserByUsername($token->getUsername());
 
         if($user->getUsername() === $token->getUsername()) {
-            
-            if($this->userProvider instanceof OICUserProvider) {
-//                $user = $token->getUser();
-                
-                echo "<pre>OICProvider token:";
-                var_dump($token);
-                echo "</pre>";exit;
-                
-            }
-            
+                        
             $relodedToken = new OICToken($user->getRoles());
             $relodedToken->setAccessToken($token->getAccessToken());
             $relodedToken->setIdToken($token->getIdToken());
             $relodedToken->setRefreshToken($token->getRefreshToken());
-            $relodedToken->setUser($user);
+            $relodedToken->setUser($token->getUser());
             
             return $relodedToken;
         }
