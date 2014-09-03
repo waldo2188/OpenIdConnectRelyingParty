@@ -5,8 +5,9 @@ namespace Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwnerInterface;
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken;
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\User\OICUser;
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception as OICException;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Constraint\ValidatorInterface;
+use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Response\OICResponseHandler;
+use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidIdTokenException;
 use Buzz\Client\AbstractCurl;
 use Buzz\Message\Request as HttpClientRequest;
 use Buzz\Message\Response as HttpClientResponse;
@@ -15,11 +16,7 @@ use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\SecurityContext;
-use Symfony\Component\Serializer\Encoder\JsonDecode;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use JOSE_JWT;
 
 /**
  * GenericOICResourceOwner
@@ -48,18 +45,26 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      * @var ValidatorInterface
      */
     private $idTokenValidator;
+    
+    /**
+     * @var OICResponseHandler
+     */
+    private $responseHandler;
 
     /**
      * @var array
      */
     private $options = array();
 
-    function __construct(SecurityContext $securityContext, HttpUtils $httpUtils, AbstractCurl $httpClient, ValidatorInterface $idTokenValidator, $options)
+    function __construct(SecurityContext $securityContext, HttpUtils $httpUtils,
+            AbstractCurl $httpClient, ValidatorInterface $idTokenValidator, 
+            OICResponseHandler $responseHandler, $options)
     {
         $this->securityContext = $securityContext;
         $this->httpUtils = $httpUtils;
         $this->httpClient = $httpClient;
         $this->idTokenValidator = $idTokenValidator;
+        $this->responseHandler = $responseHandler;
 
         if(array_key_exists("endpoints_url", $options)) {
             $options["authorisation_endpoint_url"] = $options["endpoints_url"]["authorisation"];
@@ -69,10 +74,10 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
         
         // Resolve merged options
-        $resolver = new OptionsResolver();
-        $this->configureOptions($resolver);
-        
-        $options = $resolver->resolve($options);
+//        $resolver = new OptionsResolver();
+//        $this->configureOptions($resolver);
+//        
+//        $options = $resolver->resolve($options);
         $this->options = $options;
     }
 
@@ -129,7 +134,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     public function authenticateUser(Request $request)
     {
         
-        $this->checkForError($request->query->all());
+        $this->responseHandler->checkForError($request->query->all());
         
         $code = $request->query->get('code');
 
@@ -181,16 +186,14 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $this->httpClient->setOption(CURLOPT_USERPWD, $this->options['client_id'].':'.$this->options['client_secret']);
         $this->httpClient->send($request, $response);
 
-        $content = $this->handleHttpClientResponse($response);
-
-        $content['id_token'] = \JOSE_JWT::decode($content['id_token']);
+        $content = $this->responseHandler->handleTokenAndAccessTokenResponse($response);
         
         // Apply validation describe here -> http://openid.net/specs/openid-connect-basic-1_0.html#IDTokenValidation
         if(!$this->idTokenValidator->isValid($content['id_token'])) {
             throw new OICException\InvalidIdTokenException();
         }
    
-        $oicToken->setRawTokenData($content);
+        $oicToken->setRawTokenData($content);            
     }
     
     /**
@@ -221,11 +224,16 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         
         $this->httpClient->send($request, $response);
         
-        //TODO Validate data
         
-        $content = $this->handleHttpClientResponse($response);
+        $content = $this->responseHandler->handleEndUserinfoResponse($response);
         
-        $oicToken->setRawUserinfo($content);
+
+        if($content['sub'] === $oicToken->getIdToken()->claims['sub']) {
+            $oicToken->setRawUserinfo($content);
+            return;
+        }
+        
+        throw new InvalidIdTokenException("The sub value is not equal");
     }
     
     /**
@@ -241,100 +249,29 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      *
      * @param OptionsResolverInterface $resolver
      */
-    protected function configureOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setRequired(array(
-            'base_url',
-            'client_id',
-            'client_secret',
-            'scope',
-            'issuer',
-            'authorisation_endpoint_url',
-            'token_endpoint_url',
-            'userinfo_endpoint_url',
-            'http_client',
-            'token_ttl',
-            'authentication_ttl',
-            'display',
-            'ui_locales',
-        ));
-
-        $resolver->setDefaults(array(
-            'scope' => null,
-            'display' => null,
-            'prompt' => null,
-            'ui_locales' => null,
-        ));
-    }
-    
-    /**
-     * Search error in header and in content of the response.
-     * If an error is found an exception is throw.
-     * If all is clear, the content is Json decoded (if needed) and return as an array
-     * 
-     * @param \Buzz\Message\Response $response
-     * @return array $content
-     */
-    protected function handleHttpClientResponse(HttpClientResponse $response)
-    {
-        
-        if($response->getHeader("Content-Type") == 'application/json') {
-            $jsonDecode = new JsonDecode(true);
-            $content = $jsonDecode->decode($response->getContent(), JsonEncoder::FORMAT);
-        }
-        
-        if($response->getStatusCode() >= Response::HTTP_BAD_REQUEST) {
-            if($bearerError = $response->getHeader("WWW-Authenticate") !== null){
-                preg_match ('/^Bearer error="(.*)", error_description="(.*)"$/', $bearerError, $matches);
-                $content = array('error' => $matches[1], 'error_description' => $matches[1]);                
-            }
-        }
-
-        if(!$this->checkForError($content)) {
-            return $content;
-        }
-        
-        return null;
-    }
-    
-    
-    /**
-     * @param array $content
-     * @return boolean
-     * @throws OICException\InvalidRequestException
-     * @throws OICException\InvalidResponseTypeException
-     * @throws OICException\InvalidAuthorizationCodeException
-     * @throws OICException\InvalidClientOrSecretException
-     * @throws OICException\UnsuportedGrantTypeException
-     */
-    protected function checkForError(array $content)
-    {   
-        //TODO add a log trace
-        if(array_key_exists('error', $content)) {
-            switch ($content['error']) {
-                case 'invalid request':
-                    throw new OICException\InvalidRequestException($content['error_description']);
-                    break;
-                case 'invalid_request':
-                    throw new OICException\InvalidRequestException($content['error_description']);
-                    break;
-                case 'invalid_response_type':
-                    throw new OICException\InvalidResponseTypeException($content['error_description']);
-                    break;
-                case 'invalid_authorization_code':
-                    throw new OICException\InvalidAuthorizationCodeException($content['error_description']);
-                    break;
-                case 'invalid_client':
-                    throw new OICException\InvalidClientOrSecretException($content['error_description']);
-                    break;
-                case 'unsupported_grant_type':
-                    throw new OICException\UnsuportedGrantTypeException($content['error_description']);
-                    break;
-            }
-        }
-        
-        return false;
-    }
-    
-    
+//    protected function configureOptions(OptionsResolverInterface $resolver)
+//    {
+//        $resolver->setRequired(array(
+//            'base_url',
+//            'client_id',
+//            'client_secret',
+//            'scope',
+//            'issuer',
+//            'authorisation_endpoint_url',
+//            'token_endpoint_url',
+//            'userinfo_endpoint_url',
+//            'http_client',
+//            'token_ttl',
+//            'authentication_ttl',
+//            'display',
+//            'ui_locales',
+//        ));
+//
+//        $resolver->setDefaults(array(
+//            'scope' => null,
+//            'display' => null,
+//            'prompt' => null,
+//            'ui_locales' => null,
+//        ));
+//    }    
 }

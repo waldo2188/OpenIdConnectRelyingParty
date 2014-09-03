@@ -43,11 +43,20 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         $container->setDefinition('waldo_oic_rp.http_client', $httpClient);
         
         
+        $jwkHandler = $container->getDefinition('waldo_oic_rp.jwk_handler');
+        $jwkHandler->replaceArgument(0, $config['jwk_url']);
+        $jwkHandler->replaceArgument(1, $config['jwk_cache_ttl']);
+        
+        
         $container->getDefinition('waldo_oic_rp.validator.id_token')
             ->replaceArgument(0, $config);
         
+        $container->getDefinition('waldo_oic_rp.http_client_response_handler')
+            ->replaceArgument(1, $config);
+        
         $name = 'generic';
         $this->createResoucerOwnerService($container, $name, $config);
+                    
     }
 
     /**
@@ -77,7 +86,7 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         $definition->setClass("%waldo_oic_rp.resource_owner.$name.class%");
         
         $container->setDefinition("waldo_oic_rp.resource_owner." . $name, $definition);
-        $definition->replaceArgument(4, $config);
+        $definition->replaceArgument(5, $config);
         
     }
 }

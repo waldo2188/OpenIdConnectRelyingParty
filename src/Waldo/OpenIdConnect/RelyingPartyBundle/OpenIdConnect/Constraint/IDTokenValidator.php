@@ -21,8 +21,13 @@ class IDTokenValidator implements ValidatorInterface
      * @var array
      */
     private $idToken;
+        
+    /**
+     * @var array
+     */
+    private $claims;
 
-    function __construct($options)
+    public function __construct($options)
     {
         $this->options = $options;
     }
@@ -35,14 +40,16 @@ class IDTokenValidator implements ValidatorInterface
     public function isValid($idToken)
     {
         $this->idToken = $idToken;
+        $this->claims = is_object($idToken) ? $this->idToken->claims : $this->idToken['claims'];
 
         $isValid = true;
 
+        
         /* 1. The Issuer Identifier for the OpenID Provider 
          * (which is typically obtained during Discovery) MUST exactly match 
          * the value of the iss (issuer) Claim. 
          */
-        $isValid &= $this->options['issuer'] === $this->idToken->claims['iss'];
+        $isValid &= $this->options['issuer'] === $this->claims['iss'];
 
         /* 2. The Client MUST validate that the aud (audience) Claim contains 
          * its client_id value registered at the Issuer identified by the iss (issuer)
@@ -50,18 +57,18 @@ class IDTokenValidator implements ValidatorInterface
          * does not list the Client as a valid audience, or if it contains 
          * additional audiences not trusted by the Client. 
          */
-        $isValid &= $this->isClientIdInAudience($this->idToken->claims['aud']);
+        $isValid &= $this->isClientIdInAudience($this->claims['aud']);
         
         /* 3. If the ID Token contains multiple audiences, 
          * the Client SHOULD verify that an azp Claim is present. 
          */
-        $isValid &= $this->isMultipleAudienceValide($this->idToken->claims['aud']);
+        $isValid &= $this->isMultipleAudienceValide($this->claims['aud']);
         
         /* 4. If an azp (authorized party) Claim is present, 
          * the Client SHOULD verify that its client_id is the Claim Value.  
          */
-        if(array_key_exists('azp', $this->idToken->claims)) {
-            $isValid &= $this->isClientIdInAudience($this->idToken->claims['azp']);
+        if(array_key_exists('azp', $this->claims)) {
+            $isValid &= $this->isClientIdInAudience($this->claims['azp']);
         }
         
         /* 5. The current time MUST be before the time represented by 
@@ -90,7 +97,7 @@ class IDTokenValidator implements ValidatorInterface
          */
         $isValid &= $this->isValidAuthTime();
 
-        return $isValid;
+        return (bool) $isValid;
     }
 
     private function isClientIdInAudience($aud)
@@ -111,8 +118,8 @@ class IDTokenValidator implements ValidatorInterface
             if (count($aud) == 1) {
                 return true;
             } elseif (count($aud) > 1) {
-                if(array_key_exists('azp', $this->idToken->claims)) {
-                    $this->isClientIdInAudience($this->idToken->claims['azp']);
+                if(array_key_exists('azp', $this->claims)) {
+                    $this->isClientIdInAudience($this->claims['azp']);
                 } else {
                     return false;
                 }
@@ -124,7 +131,7 @@ class IDTokenValidator implements ValidatorInterface
     private function isExpirationTimeValide()
     {
         $expirationTime = new \DateTime();
-        $expirationTime->setTimestamp($this->idToken->claims['exp']);
+        $expirationTime->setTimestamp($this->claims['exp']);
         
         return new \DateTime("Now") < $expirationTime;
     }
@@ -132,7 +139,7 @@ class IDTokenValidator implements ValidatorInterface
     private function isIatValide()
     {
         $expirationTime = new \DateTime();
-        $expirationTime->setTimestamp($this->idToken->claims['iat']);
+        $expirationTime->setTimestamp($this->claims['iat']);
         $expirationTime->add(new \DateInterval(sprintf("PT%dS", $this->options['token_ttl'])));
         
         return new \DateTime("Now") < $expirationTime;
@@ -141,10 +148,10 @@ class IDTokenValidator implements ValidatorInterface
     private function isValidAuthTime()
     {
         if($this->options['authentication_ttl'] != null && $this->options['authentication_ttl'] > 0) {
-            if(array_key_exists('auth_time', $this->idToken->claims)) {
+            if(array_key_exists('auth_time', $this->claims)) {
                 
                 $expirationAuthTime = new \DateTime();
-                $expirationAuthTime->setTimestamp($this->idToken->claims['auth_time']);
+                $expirationAuthTime->setTimestamp($this->claims['auth_time']);
                 $expirationAuthTime->add(new \DateInterval(sprintf("PT%dS", $this->options['authentication_ttl'])));
 
                 return new \DateTime("Now") < $expirationAuthTime;

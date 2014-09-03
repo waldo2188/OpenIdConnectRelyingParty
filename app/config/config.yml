@@ -1,5 +1,6 @@
 imports:
     - { resource: parameters.yml }
+    - { resource: myparameters.yml }
     - { resource: security.yml }
 
 framework:
@@ -77,6 +78,11 @@ waldo_oic_rp:
     issuer: "%oic_issuer%"
     display: page
     scope: openid profile email address phone
+    authentication_ttl: 50000
+    token_ttl: 50000
+    userinfo_signed_response_alg: RS256
+    id_token_signed_response_alg: RS512
+    jwk_url: "%jwk_url%"
     endpoints_url: 
         authorisation: "%endpoints_url_authorisation%"
         token: "%endpoints_url_token%"

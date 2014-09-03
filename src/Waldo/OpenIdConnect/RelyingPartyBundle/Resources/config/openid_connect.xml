@@ -16,6 +16,10 @@
         <parameter key="waldo_oic_rp.resource_owner.generic.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\GenericOICResourceOwner</parameter>
         
         <parameter key="waldo_oic_rp.validator.id_token.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Constraint\IDTokenValidator</parameter>
+        
+        <parameter key="waldo_oic_rp.http_client_response_handler.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Response\OICResponseHandler</parameter>
+        
+        <parameter key="waldo_oic_rp.jwk_handler.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\JWK\JWKSetHandler</parameter>
     </parameters>
 
     <services>
@@ -33,6 +37,18 @@
             <argument type="collection" /><!-- options -->
         </service>
         
+        <service id="waldo_oic_rp.http_client_response_handler" class="%waldo_oic_rp.http_client_response_handler.class%">
+            <argument type="service" id="waldo_oic_rp.jwk_handler" />
+            <argument type="collection" /><!-- options -->
+        </service>
+        
+        <service id="waldo_oic_rp.jwk_handler" class="%waldo_oic_rp.jwk_handler.class%" public="false">
+            <argument type="string" />
+            <argument type="string" />
+            <argument type="string">%kernel.cache_dir%</argument>
+            <argument type="service" id="waldo_oic_rp.http_client" />
+        </service>
+        
         <!-- User provider -->
         
         <service id="waldo_oic_rp.user.provider" class="%waldo_oic_rp.user.provider.class%" public="false" />
@@ -44,6 +60,7 @@
             <argument type="service" id="security.http_utils" />
             <argument type="service" id="waldo_oic_rp.http_client" />
             <argument type="service" id="waldo_oic_rp.validator.id_token" />
+            <argument type="service" id="waldo_oic_rp.http_client_response_handler" />
             <argument type="collection" /><!-- options -->
         </service>
         
