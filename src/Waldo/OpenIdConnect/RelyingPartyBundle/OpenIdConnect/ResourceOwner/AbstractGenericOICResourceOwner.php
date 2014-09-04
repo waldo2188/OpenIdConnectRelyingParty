@@ -14,8 +14,6 @@ use Buzz\Message\Request as HttpClientRequest;
 use Buzz\Message\Response as HttpClientResponse;
 use Buzz\Message\RequestInterface;
 use Symfony\Component\Security\Http\HttpUtils;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\SecurityContext;
@@ -80,11 +78,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             unset($options["endpoints_url"]);
         }
 
-        // Resolve merged options
-//        $resolver = new OptionsResolver();
-//        $this->configureOptions($resolver);
-//        
-//        $options = $resolver->resolve($options);
         $this->options = $options;
     }
 
@@ -100,9 +93,9 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             'scope' => $this->options['scope'],
             'nonce' => $this->setNonceInSession($request->getClientIp()),
             'state' => $this->setNonceInSession($request->getClientIp(), "state"),
-            'max_age' => 300
+            'max_age' => $this->options['authentication_ttl']
         );
-
+        
         if ($this->options['authentication_ttl'] != null && $this->options['authentication_ttl'] > 0) {
             $urlParameters['max_age'] = $this->options['authentication_ttl'];
         }
@@ -115,9 +108,15 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
 
         $urlParameters = array_merge($urlParameters, $extraParameters);
-        $urlParameters = http_build_query($urlParameters);
 
-        return $this->options['authorisation_endpoint_url'] . $urlParameters;
+        $httpRequest = new Request();
+        $authenticationUri = $httpRequest->create(
+                $this->options['authorisation_endpoint_url'],
+                RequestInterface::METHOD_GET,
+                $urlParameters)
+                ->getUri();
+
+        return $authenticationUri;
     }
 
     /**
@@ -369,35 +368,5 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             }
         }
     }
-    
-    /**
-     * Configure the option resolver
-     *
-     * @param OptionsResolverInterface $resolver
-     */
-//    protected function configureOptions(OptionsResolverInterface $resolver)
-//    {
-//        $resolver->setRequired(array(
-//            'base_url',
-//            'client_id',
-//            'client_secret',
-//            'scope',
-//            'issuer',
-//            'authorisation_endpoint_url',
-//            'token_endpoint_url',
-//            'userinfo_endpoint_url',
-//            'http_client',
-//            'token_ttl',
-//            'authentication_ttl',
-//            'display',
-//            'ui_locales',
-//        ));
-//
-//        $resolver->setDefaults(array(
-//            'scope' => null,
-//            'display' => null,
-//            'prompt' => null,
-//            'ui_locales' => null,
-//        ));
-//    }    
+   
 }
