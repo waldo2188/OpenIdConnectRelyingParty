@@ -51,8 +51,6 @@ security:
             pattern: ^/
             anonymous: ~
             openidconnect:
-                login_path:        /login
-                failure_path:      /login
     
     access_control:
         - { path: ^/private-page, roles: ROLE_OIC_USER }
@@ -65,12 +63,6 @@ security:
 waldo_oic_rp_redirect:
     resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing/redirect.xml"
     prefix:   /connects
-
-#If you want to show a page who host the link to the OpenID Connect Provider 
-#I don't know if this feature is realy usefull?
-waldo_oic_rp_login:
-    resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing/login.xml"
-    prefix:   /login
 ```
 
 

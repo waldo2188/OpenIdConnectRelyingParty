@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class OICListener extends AbstractAuthenticationListener
 {
-
     /**
      * {@inheritDoc}
      */

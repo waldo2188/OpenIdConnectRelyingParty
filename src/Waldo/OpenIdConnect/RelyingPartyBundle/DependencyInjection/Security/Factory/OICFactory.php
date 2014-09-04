@@ -15,19 +15,6 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class OICFactory extends AbstractFactory
 {
-
-    /**
-     * {@inheritDoc}
-     */
-    public function addConfiguration(NodeDefinition $node)
-    {
-        parent::addConfiguration($node);
-        $builder = $node->children();
-        $builder
-                ->scalarNode('login_path')->cannotBeEmpty()->isRequired()->end()
-        ;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -52,8 +39,6 @@ class OICFactory extends AbstractFactory
 
         $container
                 ->setDefinition($entryPointId, new DefinitionDecorator('waldo_oic_rp.authentication.entrypoint'))
-                ->addArgument($config['login_path'])
-                ->addArgument($config['use_forward'])
                 ->addArgument(new Reference('waldo_oic_rp.resource_owner.generic'))
         ;
 

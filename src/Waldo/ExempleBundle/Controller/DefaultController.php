@@ -36,7 +36,7 @@ class DefaultController extends Controller
     
     /**
      * @Secure(roles="ROLE_OIC_USER")
-     * @Route("/private/other", name="_private_page")
+     * @Route("/private/other", name="_private_other_page")
      * @Template()
      */
     public function otherPrivateResouceAction()

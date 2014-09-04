@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class OICEntryPoint implements AuthenticationEntryPointInterface
 {
-
     /**
      * @var HttpKernelInterface
      */
@@ -28,51 +27,31 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
     protected $httpUtils;
 
     /**
-     * @var string
-     */
-    protected $loginPath;
-
-    /**
-     * @var Boolean
-     */
-    protected $useForward;
-
-    /**
      * @var ResourceOwnerInterface 
      */
     protected $resourceOwner;
 
-
     /**
-     * Constructor
-     *
-     * @param HttpUtils $httpUtils
-     * @param string $loginPath
-     * @param Boolean $useForward
+     * 
+     * @param \Symfony\Component\HttpKernel\HttpKernelInterface $kernel
+     * @param \Symfony\Component\Security\Http\HttpUtils $httpUtils
+     * @param \Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwnerInterface $resourceOwner
      */
-    public function __construct(HttpKernelInterface $kernel, HttpUtils $httpUtils, $loginPath, $useForward = false, ResourceOwnerInterface $resourceOwner)
+    public function __construct(HttpKernelInterface $kernel, HttpUtils $httpUtils, ResourceOwnerInterface $resourceOwner)
     {
         $this->httpKernel = $kernel;
         $this->httpUtils = $httpUtils;
-        $this->loginPath = $loginPath;
-        $this->useForward = (Boolean) $useForward;
         $this->resourceOwner = $resourceOwner;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function start(Request $request, AuthenticationException $authException = null)
     {
         $this->resourceOwner->setRedirectUserAfter($request->getUri());
         
         $authenticationEndpointUrl = $this->resourceOwner->getAuthenticationEndpointUrl($request);
-
-        if ($this->useForward) {
-            $subRequest = $this->httpUtils->createRequest($request, $this->loginPath);
-            $response = $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-            if (200 === $response->getStatusCode()) {
-                $response->headers->set('X-Status-Code', 401);
-            }
-            return $response;
-        }
         
         //Create and return the redirection request to the OpenId Provider
         return $this->httpUtils->createRedirectResponse($request, $authenticationEndpointUrl);
