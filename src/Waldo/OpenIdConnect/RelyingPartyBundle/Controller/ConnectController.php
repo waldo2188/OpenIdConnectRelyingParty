@@ -8,22 +8,12 @@ use Symfony\Component\HttpFoundation\Request;
 class ConnectController extends Controller
 {
 
-    /**
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     */
-    public function connectAction(Request $request)
+    public function connectAction()
     {
-        echo "<pre>ConnectController:connectAction:";
-        var_dump($request->query->all());
-//        var_dump($request);
-        echo "</pre>";
-        exit;
     }
 
     public function redirectToServiceAction(Request $request)
     {
-        
         $this->get('waldo_oic_rp.resource_owner.generic')->authenticateUser($request);
         
         return $this->redirect($this->generateUrl("_private_page"));
