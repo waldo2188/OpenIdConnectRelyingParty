@@ -48,6 +48,7 @@ class Configuration implements ConfigurationInterface
 
         $this->addHttpClientConfiguration($rootNode);
         $this->addSignatureConfiguration($rootNode);
+        $this->addCipherConfiguration($rootNode);
         
         $rootNode
             ->children()
@@ -176,6 +177,17 @@ class Configuration implements ConfigurationInterface
                 // @see http://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata
                 ->scalarNode('userinfo_signed_response_alg')->defaultNull()->end()
                 ->scalarNode('id_token_signed_response_alg')->defaultNull()->end()
+            ->end()
+        ;
+    }
+
+    private function addCipherConfiguration(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                // Path to the RSA Keys
+                ->scalarNode('private_rsa_path')->defaultNull()->end()
+                ->scalarNode('public_rsa_path')->defaultNull()->end()
             ->end()
         ;
     }

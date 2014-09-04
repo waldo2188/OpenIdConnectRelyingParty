@@ -57,6 +57,7 @@
 
         <service id="waldo_oic_rp.abstract_resource_owner.generic" abstract="true">
             <argument type="service" id="security.context" />
+            <argument type="service" id="session" />
             <argument type="service" id="security.http_utils" />
             <argument type="service" id="waldo_oic_rp.http_client" />
             <argument type="service" id="waldo_oic_rp.validator.id_token" />
