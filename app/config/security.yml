@@ -13,7 +13,7 @@ security:
             pattern: ^/
             anonymous: ~
             openidconnect:
-#                use_forward: true
+#                use_forward: true #Forward User to the page defined by login_path
                 login_path:        /login
                 failure_path:      /login
     

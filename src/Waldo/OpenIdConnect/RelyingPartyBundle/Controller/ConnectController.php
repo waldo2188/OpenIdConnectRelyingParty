@@ -14,9 +14,9 @@ class ConnectController extends Controller
 
     public function redirectToServiceAction(Request $request)
     {
-        $this->get('waldo_oic_rp.resource_owner.generic')->authenticateUser($request);
+        $redirectUri = $this->get('waldo_oic_rp.resource_owner.generic')->authenticateUser($request);
         
-        return $this->redirect($this->generateUrl("_private_page"));
+        return $this->redirect($redirectUri);
     }
 
 }

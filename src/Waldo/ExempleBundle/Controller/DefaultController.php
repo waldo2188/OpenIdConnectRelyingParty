@@ -31,9 +31,16 @@ class DefaultController extends Controller
         var_dump($this->get('security.context')->getToken());
         var_dump($this->get('security.context')->getToken()->getUser());
         echo "</pre>";
-
-
-
+        return array();
+    }
+    
+    /**
+     * @Secure(roles="ROLE_OIC_USER")
+     * @Route("/private/other", name="_private_page")
+     * @Template()
+     */
+    public function otherPrivateResouceAction()
+    {
         return array();
     }
 }

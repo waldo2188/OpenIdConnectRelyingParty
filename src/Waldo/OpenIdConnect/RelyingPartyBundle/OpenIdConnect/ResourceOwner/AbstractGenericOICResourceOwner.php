@@ -80,6 +80,11 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $this->options = $options;
     }
+    
+    public function setRedirectUserAfter($uri)
+    {
+        $this->session->set('auth.oic.user.redirect_uri', $uri);
+    }
 
     /**
      * {@inheritDoc}
@@ -149,6 +154,11 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $oicToken->setUser(new OICUser($oicToken->getUserinfo("sub"), $oicToken->getUserinfo()));
 
         $this->securityContext->setToken($oicToken);
+        
+        $redirectUri = $this->session->get('auth.oic.user.redirect_uri');
+        $this->session->remove('auth.oic.user.redirect_uri');
+        
+        return $redirectUri;
     }
 
     /**

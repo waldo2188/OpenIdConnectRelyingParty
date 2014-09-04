@@ -61,7 +61,8 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
-
+        $this->resourceOwner->setRedirectUserAfter($request->getUri());
+        
         $authenticationEndpointUrl = $this->resourceOwner->getAuthenticationEndpointUrl($request);
 
         if ($this->useForward) {
