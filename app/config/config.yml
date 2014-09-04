@@ -87,4 +87,6 @@ waldo_oic_rp:
         authorisation: "%endpoints_url_authorisation%"
         token: "%endpoints_url_token%"
         userinfo: "%endpoints_url_userinfo%"
+#    private_rsa_path: "%kernel.root_dir%/../src/Waldo/OpenIdConnect/RelyingPartyBundle/Resources/rsa_key/id_rsa"
+#    public_rsa_path: "%kernel.root_dir%/../src/Waldo/OpenIdConnect/RelyingPartyBundle/Resources/rsa_key/id_rsa.pub"
         
