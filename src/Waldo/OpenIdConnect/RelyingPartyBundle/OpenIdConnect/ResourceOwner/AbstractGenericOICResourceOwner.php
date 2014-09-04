@@ -95,7 +95,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             'state' => $this->setNonceInSession($request->getClientIp(), "state"),
             'max_age' => $this->options['authentication_ttl']
         );
-        
+
         if ($this->options['authentication_ttl'] != null && $this->options['authentication_ttl'] > 0) {
             $urlParameters['max_age'] = $this->options['authentication_ttl'];
         }
@@ -111,9 +111,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $httpRequest = new Request();
         $authenticationUri = $httpRequest->create(
-                $this->options['authorisation_endpoint_url'],
-                RequestInterface::METHOD_GET,
-                $urlParameters)
+                        $this->options['authorisation_endpoint_url'], RequestInterface::METHOD_GET, $urlParameters)
                 ->getUri();
 
         return $authenticationUri;
@@ -165,8 +163,8 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     protected function getIdTokenAndAccessToken(Request $request, OICToken $oicToken, $code)
     {
         $this->checkStateAndNonce($request);
-        
-        
+
+
         $tokenEndpointUrl = $this->getTokenEndpointUrl();
 
         $postParameters = array(
@@ -193,7 +191,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $this->httpClient->send($request, $response);
 
         $content = $this->responseHandler->handleTokenAndAccessTokenResponse($response);
-        
+
         // Apply validation describe here -> http://openid.net/specs/openid-connect-basic-1_0.html#IDTokenValidation
         if (!$this->idTokenValidator->isValid($content['id_token'])) {
             throw new OICException\InvalidIdTokenException();
@@ -360,13 +358,13 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             if ($request->query->has($type)) {
                 if (!$this->isNonceValid($type, $request->getClientIp(), $request->query->get($type))) {
                     throw new InvalidNonceException(
-                            sprintf("the %s value is not the one expected", $type)
-                            );
+                    sprintf("the %s value is not the one expected", $type)
+                    );
                 }
             } else {
                 $this->session->remove("auth.oic." . $type);
             }
         }
     }
-   
+
 }
