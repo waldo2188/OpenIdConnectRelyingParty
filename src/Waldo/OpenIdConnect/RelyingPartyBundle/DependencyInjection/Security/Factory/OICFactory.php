@@ -40,7 +40,6 @@ class OICFactory extends AbstractFactory
         $container
                 ->setDefinition($entryPointId, new DefinitionDecorator('waldo_oic_rp.authentication.entrypoint'))
                 ->addArgument(new Reference('waldo_oic_rp.resource_owner.generic'))
-                ->addArgument($this->configureSuccessHandlerOptions($config))
         ;
 
         return $entryPointId;
@@ -56,7 +55,6 @@ class OICFactory extends AbstractFactory
         $container
                 ->getDefinition($listenerId)
                 ->addMethodCall('setResourceOwner', array(new Reference('waldo_oic_rp.resource_owner.generic')))
-                ->addMethodCall('setConfig', array($this->configureSuccessHandlerOptions($config)))
         ;
 
         return $listenerId;
@@ -87,18 +85,5 @@ class OICFactory extends AbstractFactory
     {
         return 'pre_auth';
     }
-    
-    protected function configureSuccessHandlerOptions($options)
-    {
-        $optionsOut = array();
-        foreach(array_keys($this->defaultSuccessHandlerOptions) as $key) {
-            $optionsOut[$key] = array_key_exists($key, $options)
-                    ? $options[$key]
-                    : $this->defaultSuccessHandlerOptions[$key]
-                    ;
-        }
-
-        return $optionsOut;
-    }
-
+   
 }

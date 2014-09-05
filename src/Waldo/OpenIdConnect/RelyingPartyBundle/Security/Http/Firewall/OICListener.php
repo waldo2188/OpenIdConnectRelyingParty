@@ -19,11 +19,6 @@ class OICListener extends AbstractAuthenticationListener
      * @var ResourceOwnerInterface  
      */
     private $resourceOwner;
-    
-    /**
-     * @var array
-     */
-    private $config;
 
     /**
      * @param ResourceOwnerInterface $resourceOwner
@@ -32,36 +27,22 @@ class OICListener extends AbstractAuthenticationListener
     {
         $this->resourceOwner = $resourceOwner;
     }
-    
-    /**
-     * @param array $config
-     */
-    public function setConfig(array $config)
-    {
-        
-        echo "<pre>OICListener : AbstractAuthenticationListener";
-        var_dump($config);
-        echo "</pre>";
-exit;
-
-
-        $this->config = $config;
-    }
 
     /**
      * {@inheritDoc}
      */
-    protected function attemptAuthentication(Request $request)
-    {
-        
-        if($request->query->count() == 0) {
-            $uri = $this->resourceOwner->getAuthenticationEndpointUrl($request);
-        } else {
-            $this->resourceOwner->setConfig($this->config);
-            $this->resourceOwner->authenticateUser($request);
-        }       
+    protected function attemptAuthentication(Request $request) {
 
-        return new RedirectResponse($uri);
+        if($token = $this->resourceOwner->isAuthenticated()) {
+            return $token;
+        }
+        
+        if ($request->query->count() == 0) {
+            $uri = $this->resourceOwner->getAuthenticationEndpointUrl($request);
+            return new RedirectResponse($uri);
+        }
+
+        return $this->resourceOwner->authenticateUser($request);
     }
 
 }

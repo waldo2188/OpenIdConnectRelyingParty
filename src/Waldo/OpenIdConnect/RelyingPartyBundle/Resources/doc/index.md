@@ -34,6 +34,8 @@ waldo_oic_rp:
     public_rsa_path: null #Path to the public RSA key
 ```
 
+I recommend you to set a path for `default_target_path`. Because you risk to 
+suffer redirection loop. 
 ```yaml
 #/app/config/security.yml
 security:
@@ -51,6 +53,10 @@ security:
             pattern: ^/
             anonymous: ~
             openidconnect:
+                always_use_default_target_path: false
+                default_target_path: /private-page
+                target_path_parameter: ~
+                use_referer: ~
     
     access_control:
         - { path: ^/private-page, roles: ROLE_OIC_USER }
@@ -59,11 +65,18 @@ security:
 
 ```ỳaml
 #/app/config/routing.ylml
-# to put at the top of the file
-waldo_oic_rp_redirect:
-    resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing/redirect.xml"
-    prefix:   /connects
+#Set a path for the route name 'login_check'
+#You don't need to provide a controller for this route
+login_check:
+    path: /login_check
 ```
+
+What is the link for login enduser ?
+------------------------------------
+Two way to authenticate user.
+- The first, do nothing. When an end user come on a page who is behind a firewall,
+he will be automatically  redirected to the OpenId Connect Provider's login page
+- The second. You can create a login link with the route 'login_check'
 
 
 

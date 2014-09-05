@@ -13,12 +13,11 @@ use Buzz\Client\AbstractCurl;
 use Buzz\Message\Request as HttpClientRequest;
 use Buzz\Message\Response as HttpClientResponse;
 use Buzz\Message\RequestInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 /**
  * GenericOICResourceOwner
@@ -63,11 +62,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      */
     private $options = array();
 
-    /**
-     * @var array
-     */
-    private $firewallOption = array();
-
     public function __construct(SecurityContext $securityContext, SessionInterface $session,
             HttpUtils $httpUtils, AbstractCurl $httpClient, ValidatorInterface $idTokenValidator,
             OICResponseHandler $responseHandler, $options)
@@ -88,22 +82,9 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
 
         $this->options = $options;
-        
-    }
-    
-    public function setConfig(array $options)
-    {
-        // Resolve merged options
-        $resolver = new OptionsResolver();
-        $this->configureOptions($resolver);
-        $this->firewallOption = $resolver->resolve($options);
-    }
-    
-    public function setRedirectUserAfter($uri)
-    {
-        $this->session->set('auth.oic.user.redirect_uri', $uri);
-    }
 
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -155,6 +136,19 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     {
         return $this->options['userinfo_endpoint_url'];
     }
+    
+    /**
+     * Check if user is already authenticated
+     * @return TokenInterface | boolean
+     */
+    public function isAuthenticated()    
+    {
+        $token = $this->securityContext->getToken();
+        if($token !== null && $token instanceof TokenInterface) {
+            return $token;
+        }
+        return false;
+    }
 
     public function authenticateUser(Request $request)
     {
@@ -170,16 +164,9 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $oicToken->setUser(new OICUser($oicToken->getUserinfo("sub"), $oicToken->getUserinfo()));
 
-        $this->securityContext->setToken($oicToken);
-        
-        $redirectUri = $this->options['base_url'];
-        if($this->session->has('auth.oic.user.redirect_uri')) {
-            $redirectUri = $this->session->get('auth.oic.user.redirect_uri');
-            $this->session->remove('auth.oic.user.redirect_uri');
-        }
-
-        return $redirectUri;
+        return $oicToken;
     }
+
 
     /**
      * Call the OpenID Connect Provider to exchange a code value against an id_token and an access_token
@@ -345,8 +332,12 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
 
         $referenceNonce = \JOSE_URLSafeBase64::decode($referenceNonce);
-
+        
         $referenceNonce = split("-", $referenceNonce);
+        if(count($referenceNonce) == 0) {
+            throw new InvalidNonceException("Nonce value is corrupted");
+        }
+        
         $referenceNonce = \JOSE_URLSafeBase64::decode($referenceNonce[1]);
 
         if ($referenceNonce !== $uniqueValue) {
@@ -370,7 +361,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $this->session->set("auth.oic." . $type, serialize($nonce));
 
         if ($nonce instanceof \JOSE_JWE) {
-            return bin2hex($nonce->cipher_text);
+            return \JOSE_URLSafeBase64::encode(bin2hex($nonce->cipher_text));
         }
 
         return $nonce;
@@ -395,29 +386,5 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
                 $this->session->remove("auth.oic." . $type);
             }
         }
-    }
-
-    /**
-     * Configure the option resolver
-     *
-     * @param OptionsResolverInterface $resolver
-     */
-    protected function configureOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setRequired(array(
-            'always_use_default_target_path',
-            'default_target_path',
-            'target_path_parameter',
-            'login_path',
-            'use_referer'
-        ));
-
-        $resolver->setDefaults(array(
-            'always_use_default_target_path' => false,
-            'default_target_path' => "/",
-            'target_path_parameter' => "_target_path",
-            'login_path' => "/login",
-            'use_referer' => false
-        ));
     }
 }

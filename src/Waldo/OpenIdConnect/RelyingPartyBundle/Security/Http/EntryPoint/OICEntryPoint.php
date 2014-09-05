@@ -30,11 +30,6 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
      * @var ResourceOwnerInterface 
      */
     protected $resourceOwner;
-    
-    /**
-     * array
-     */
-    protected $config;
 
     /**
      * 
@@ -42,12 +37,11 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
      * @param \Symfony\Component\Security\Http\HttpUtils $httpUtils
      * @param \Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwnerInterface $resourceOwner
      */
-    public function __construct(HttpKernelInterface $kernel, HttpUtils $httpUtils, ResourceOwnerInterface $resourceOwner, array $config = null)
+    public function __construct(HttpKernelInterface $kernel, HttpUtils $httpUtils, ResourceOwnerInterface $resourceOwner)
     {
         $this->httpKernel = $kernel;
         $this->httpUtils = $httpUtils;
         $this->resourceOwner = $resourceOwner;
-        $this->config = $config;       
     }
 
     /**
@@ -55,8 +49,8 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        $this->resourceOwner->setConfig($this->config);
-        $this->resourceOwner->setRedirectUserAfter($request->getUri());
+//        $this->resourceOwner->setConfig($this->config);
+//        $this->resourceOwner->setRedirectUserAfter($request->getUri());
         
         $authenticationEndpointUrl = $this->resourceOwner->getAuthenticationEndpointUrl($request);
         

@@ -14,7 +14,7 @@ security:
             anonymous: ~
             openidconnect:
                 always_use_default_target_path: false
-                default_target_path: /plo
+                default_target_path: /private/other
                 target_path_parameter: ~
                 use_referer: ~
                 
