@@ -7,11 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ConnectController extends Controller
 {
-
-    public function connectAction()
-    {
-    }
-
     public function redirectToServiceAction(Request $request)
     {
         $redirectUri = $this->get('waldo_oic_rp.resource_owner.generic')->authenticateUser($request);
