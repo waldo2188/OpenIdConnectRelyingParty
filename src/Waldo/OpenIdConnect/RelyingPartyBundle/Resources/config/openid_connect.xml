@@ -24,7 +24,8 @@
 
     <services>
         <service id="waldo_oic_rp.authentication.listener" class="%waldo_oic_rp.authentication.listener.class%"
-                 parent="security.authentication.listener.abstract" public="false" abstract="true" />
+                        parent="security.authentication.listener.abstract" public="false" abstract="true" />
+        
         
         <service id="waldo_oic_rp.authentication.provider" class="%waldo_oic_rp.authentication.provider.class%" public="false" />
         

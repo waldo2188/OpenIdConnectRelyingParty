@@ -3,7 +3,6 @@
 namespace Waldo\OpenIdConnect\RelyingPartyBundle\DependencyInjection\Security\Factory;
 
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AbstractFactory;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
@@ -15,13 +14,14 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class OICFactory extends AbstractFactory
 {
+
     /**
      * {@inheritDoc}
      */
     protected function createAuthProvider(ContainerBuilder $container, $id, $config, $userProviderId)
     {
         $providerId = 'security.authentication.provider.oic_rp.' . $id;
-        
+
         $container
                 ->setDefinition($providerId, new DefinitionDecorator('waldo_oic_rp.authentication.provider'))
                 ->addArgument(new Reference($userProviderId))
@@ -40,9 +40,26 @@ class OICFactory extends AbstractFactory
         $container
                 ->setDefinition($entryPointId, new DefinitionDecorator('waldo_oic_rp.authentication.entrypoint'))
                 ->addArgument(new Reference('waldo_oic_rp.resource_owner.generic'))
+                ->addArgument($this->configureSuccessHandlerOptions($config))
         ;
 
         return $entryPointId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function createListener($container, $id, $config, $userProvider)
+    {
+        $listenerId = parent::createListener($container, $id, $config, $userProvider);
+
+        $container
+                ->getDefinition($listenerId)
+                ->addMethodCall('setResourceOwner', array(new Reference('waldo_oic_rp.resource_owner.generic')))
+                ->addMethodCall('setConfig', array($this->configureSuccessHandlerOptions($config)))
+        ;
+
+        return $listenerId;
     }
 
     /**
@@ -68,7 +85,20 @@ class OICFactory extends AbstractFactory
      */
     public function getPosition()
     {
-        return 'http';
+        return 'pre_auth';
+    }
+    
+    protected function configureSuccessHandlerOptions($options)
+    {
+        $optionsOut = array();
+        foreach(array_keys($this->defaultSuccessHandlerOptions) as $key) {
+            $optionsOut[$key] = array_key_exists($key, $options)
+                    ? $options[$key]
+                    : $this->defaultSuccessHandlerOptions[$key]
+                    ;
+        }
+
+        return $optionsOut;
     }
 
 }

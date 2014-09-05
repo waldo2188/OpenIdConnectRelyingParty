@@ -13,6 +13,8 @@ use Buzz\Client\AbstractCurl;
 use Buzz\Message\Request as HttpClientRequest;
 use Buzz\Message\Response as HttpClientResponse;
 use Buzz\Message\RequestInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -61,7 +63,14 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      */
     private $options = array();
 
-    function __construct(SecurityContext $securityContext, SessionInterface $session, HttpUtils $httpUtils, AbstractCurl $httpClient, ValidatorInterface $idTokenValidator, OICResponseHandler $responseHandler, $options)
+    /**
+     * @var array
+     */
+    private $firewallOption = array();
+
+    public function __construct(SecurityContext $securityContext, SessionInterface $session,
+            HttpUtils $httpUtils, AbstractCurl $httpClient, ValidatorInterface $idTokenValidator,
+            OICResponseHandler $responseHandler, $options)
     {
         $this->securityContext = $securityContext;
         $this->session = $session;
@@ -79,6 +88,15 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
 
         $this->options = $options;
+        
+    }
+    
+    public function setConfig(array $options)
+    {
+        // Resolve merged options
+        $resolver = new OptionsResolver();
+        $this->configureOptions($resolver);
+        $this->firewallOption = $resolver->resolve($options);
     }
     
     public function setRedirectUserAfter($uri)
@@ -89,7 +107,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     /**
      * {@inheritDoc}
      */
-    public function getAuthenticationEndpointUrl(Request $request, $redirectUri = 'waldo_oic_rp_redirect', array $extraParameters = array())
+    public function getAuthenticationEndpointUrl(Request $request, $redirectUri = 'login_check', array $extraParameters = array())
     {
         $urlParameters = array(
             'client_id' => $this->options['client_id'],
@@ -140,7 +158,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
     public function authenticateUser(Request $request)
     {
-
         $this->responseHandler->checkForError($request->query->all());
 
         $code = $request->query->get('code');
@@ -155,9 +172,12 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $this->securityContext->setToken($oicToken);
         
-        $redirectUri = $this->session->get('auth.oic.user.redirect_uri');
-        $this->session->remove('auth.oic.user.redirect_uri');
-        
+        $redirectUri = $this->options['base_url'];
+        if($this->session->has('auth.oic.user.redirect_uri')) {
+            $redirectUri = $this->session->get('auth.oic.user.redirect_uri');
+            $this->session->remove('auth.oic.user.redirect_uri');
+        }
+
         return $redirectUri;
     }
 
@@ -377,4 +397,27 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
     }
 
+    /**
+     * Configure the option resolver
+     *
+     * @param OptionsResolverInterface $resolver
+     */
+    protected function configureOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setRequired(array(
+            'always_use_default_target_path',
+            'default_target_path',
+            'target_path_parameter',
+            'login_path',
+            'use_referer'
+        ));
+
+        $resolver->setDefaults(array(
+            'always_use_default_target_path' => false,
+            'default_target_path' => "/",
+            'target_path_parameter' => "_target_path",
+            'login_path' => "/login",
+            'use_referer' => false
+        ));
+    }
 }

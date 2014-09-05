@@ -28,6 +28,7 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         $loader->load('services.xml');
         $loader->load('openid_connect.xml');
         $loader->load('buzz.xml');
+                
      
         $this->constructEndpointUrl($config);
         
@@ -56,7 +57,7 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         
         $name = 'generic';
         $this->createResoucerOwnerService($container, $name, $config);
-                    
+        
     }
 
     /**

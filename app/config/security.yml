@@ -12,7 +12,12 @@ security:
         secured_area:
             pattern: ^/
             anonymous: ~
-            openidconnect: ~
+            openidconnect:
+                always_use_default_target_path: false
+                default_target_path: /plo
+                target_path_parameter: ~
+                use_referer: ~
+                
     
     access_control:
         - { path: ^/private, roles: ROLE_OIC_USER }

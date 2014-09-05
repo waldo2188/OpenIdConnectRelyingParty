@@ -1,8 +1,11 @@
-waldo_oic_rp_redirect:
-    resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing/redirect.xml"
-    prefix:   /connects
+#waldo_oic_rp_redirect:
+#    resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing/redirect.xml"
+#    prefix:   /connects
 
 waldo_exemple:
     resource: "@WaldoExempleBundle/Controller/"
     type:     annotation
     prefix:   /
+    
+login_check:
+    path: /login_check

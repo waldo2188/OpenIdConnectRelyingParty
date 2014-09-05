@@ -2,9 +2,10 @@
 
 namespace Waldo\OpenIdConnect\RelyingPartyBundle\Security\Http\Firewall;
 
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Code\Authentication\Token\OICToken;
+use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwnerInterface;
 use Symfony\Component\Security\Http\Firewall\AbstractAuthenticationListener;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * OpenId Connect Listener
@@ -13,24 +14,54 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class OICListener extends AbstractAuthenticationListener
 {
+
+    /**
+     * @var ResourceOwnerInterface  
+     */
+    private $resourceOwner;
+    
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @param ResourceOwnerInterface $resourceOwner
+     */
+    public function setResourceOwner(ResourceOwnerInterface $resourceOwner)
+    {
+        $this->resourceOwner = $resourceOwner;
+    }
+    
+    /**
+     * @param array $config
+     */
+    public function setConfig(array $config)
+    {
+        
+        echo "<pre>OICListener : AbstractAuthenticationListener";
+        var_dump($config);
+        echo "</pre>";
+exit;
+
+
+        $this->config = $config;
+    }
+
     /**
      * {@inheritDoc}
      */
     protected function attemptAuthentication(Request $request)
     {
-        echo "<pre>OICListener:";
-        var_dump($request);
-        echo "</pre>";exit;
-
-
-
-        //TODO extract idToken and accessToken
-        $idToken = null;
-        $accessToken = null;
         
-        $token = new OICToken($idToken, $accessToken);
-                
-        return $this->authenticationManager->authenticate($token);
+        if($request->query->count() == 0) {
+            $uri = $this->resourceOwner->getAuthenticationEndpointUrl($request);
+        } else {
+            $this->resourceOwner->setConfig($this->config);
+            $this->resourceOwner->authenticateUser($request);
+        }       
+
+        return new RedirectResponse($uri);
     }
 
 }
