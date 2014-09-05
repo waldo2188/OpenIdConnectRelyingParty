@@ -30,12 +30,12 @@ waldo_oic_rp:
     id_token_signed_response_alg: null #Algorihme for signing tokenID response (RS256)
     jwk_url: https://openid-connect-provider.tld/op.jwk #URL to the Json Web Key of OpenID Connect Provider
     jwk_cache_ttl 86400 #Validity periods in second where the JWK is valid
-    private_rsa_path: null #Path to the private RSA key
-    public_rsa_path: null #Path to the public RSA key
 ```
 
 I recommend you to set a path for `default_target_path`. Because you risk to 
-suffer redirection loop. 
+suffer redirection loop.
+You must maybe set a path for `login_path`, the same as `default_target_path` 
+is a good start.
 ```yaml
 #/app/config/security.yml
 security:
@@ -55,6 +55,7 @@ security:
             openidconnect:
                 always_use_default_target_path: false
                 default_target_path: /private-page
+                login_path: /private-page
                 target_path_parameter: ~
                 use_referer: ~
     
@@ -80,31 +81,13 @@ he will be automatically  redirected to the OpenId Connect Provider's login page
 
 
 
-## RSA Key
-The rsa keys are optional, but it's better to have for higher security.
-You don't need to buy them, just follow the tutorial on Github.
-https://help.github.com/articles/generating-ssh-keys
-
 TODO
 ====
 Add logout mechanism
-
+Add re-authentication mechanism
 
 Not yet implemented
 ===================
-
-Encryption / Decryption
------------------------
-
-Need to be implemented
-
-For now `Id Token Signed Response Alg` must be set to `RS256`
-
-In AbstractGenericOICResourceOwner, create a Request and Response type for
-http_client who abstract all the logic of Encryption / Decryption.
-Need to add all parameters like `Request Object Signing Alg` in config
-
-
 
 Client Prepares Authentication Request
 ---------------------------------------

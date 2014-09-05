@@ -48,10 +48,7 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
      * {@inheritDoc}
      */
     public function start(Request $request, AuthenticationException $authException = null)
-    {
-//        $this->resourceOwner->setConfig($this->config);
-//        $this->resourceOwner->setRedirectUserAfter($request->getUri());
-        
+    {       
         $authenticationEndpointUrl = $this->resourceOwner->getAuthenticationEndpointUrl($request);
         
         //Create and return the redirection request to the OpenId Provider

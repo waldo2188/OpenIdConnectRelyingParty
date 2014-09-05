@@ -5,7 +5,6 @@ namespace Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Response;
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception as OICException;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\JWK\JWKSetHandler;
 use Buzz\Message\Response as HttpClientResponse;
-use JOSE_JWT;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +27,12 @@ class OICResponseHandler
      */
     protected $jwkHandler;
     
+    /**
+     * __construct
+     * 
+     * @param \Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\JWK\JWKSetHandler $jwkHandler
+     * @param type $options
+     */
     public function __construct(JWKSetHandler $jwkHandler, $options)
     {
         $this->jwkHandler = $jwkHandler;
@@ -60,7 +65,12 @@ class OICResponseHandler
         return null;
     }
     
-    
+    /**
+     * handleTokenAndAccessTokenResponse
+     * 
+     * @param \Buzz\Message\Response $response
+     * @return \JOSE_JWT
+     */
     public function handleTokenAndAccessTokenResponse(HttpClientResponse $response)
     {  
         $content = $this->handleHttpClientResponse($response);
@@ -80,6 +90,13 @@ class OICResponseHandler
         return $content;
     }
     
+    /**
+     * handleEndUserinfoResponse
+     * 
+     * @param \Buzz\Message\Response $response
+     * @return \JOSE_JWT
+     * @throws OICException\InvalidIdSignatureException
+     */
     public function handleEndUserinfoResponse(HttpClientResponse $response)
     {  
         $content = $this->handleHttpClientResponse($response);
@@ -99,7 +116,12 @@ class OICResponseHandler
     }
     
     
-    
+    /**
+     * getContent
+     * 
+     * @param \Buzz\Message\Response $response
+     * @return type
+     */
     protected function getContent(HttpClientResponse $response)
     {
         switch ($response->getHeader("Content-Type")) {
@@ -155,26 +177,26 @@ class OICResponseHandler
     public function checkForError($content)
     {   
         //TODO add a log trace
-//        if(array_key_exists('error', $content)) {
-//            switch ($content['error']) {
-//                case 'invalid request':
-//                case 'invalid_request':
-//                    throw new OICException\InvalidRequestException($content['error_description']);
-//                    break;
-//                case 'invalid_response_type':
-//                    throw new OICException\InvalidResponseTypeException($content['error_description']);
-//                    break;
-//                case 'invalid_authorization_code':
-//                    throw new OICException\InvalidAuthorizationCodeException($content['error_description']);
-//                    break;
-//                case 'invalid_client':
-//                    throw new OICException\InvalidClientOrSecretException($content['error_description']);
-//                    break;
-//                case 'unsupported_grant_type':
-//                    throw new OICException\UnsuportedGrantTypeException($content['error_description']);
-//                    break;
-//            }
-//        }
+        if(array_key_exists('error', $content)) {
+            switch ($content['error']) {
+                case 'invalid request':
+                case 'invalid_request':
+                    throw new OICException\InvalidRequestException($content['error_description']);
+                    break;
+                case 'invalid_response_type':
+                    throw new OICException\InvalidResponseTypeException($content['error_description']);
+                    break;
+                case 'invalid_authorization_code':
+                    throw new OICException\InvalidAuthorizationCodeException($content['error_description']);
+                    break;
+                case 'invalid_client':
+                    throw new OICException\InvalidClientOrSecretException($content['error_description']);
+                    break;
+                case 'unsupported_grant_type':
+                    throw new OICException\UnsuportedGrantTypeException($content['error_description']);
+                    break;
+            }
+        }
         
         return false;
     }

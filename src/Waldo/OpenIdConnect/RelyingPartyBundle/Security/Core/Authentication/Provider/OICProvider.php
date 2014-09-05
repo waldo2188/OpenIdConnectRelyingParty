@@ -7,7 +7,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\User\OICUserProvider;
 
 /**
  * OICProvider

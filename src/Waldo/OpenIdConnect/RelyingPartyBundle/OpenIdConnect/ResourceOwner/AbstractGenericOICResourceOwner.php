@@ -8,14 +8,13 @@ use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\User\OICUser;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Constraint\ValidatorInterface;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Response\OICResponseHandler;
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidIdTokenException;
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidNonceException;
+use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\NonceHelper;
 use Buzz\Client\AbstractCurl;
 use Buzz\Message\Request as HttpClientRequest;
 use Buzz\Message\Response as HttpClientResponse;
 use Buzz\Message\RequestInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
@@ -31,11 +30,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      * @var SecurityContext 
      */
     private $securityContext;
-
-    /**
-     * @var SessionInterface
-     */
-    private $session;
 
     /**
      * @var HttpUtils 
@@ -58,20 +52,27 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     private $responseHandler;
 
     /**
+     * @var NonceHelper
+     */
+    private $nonceHelper;
+    
+    /**
      * @var array
      */
     private $options = array();
 
-    public function __construct(SecurityContext $securityContext, SessionInterface $session,
-            HttpUtils $httpUtils, AbstractCurl $httpClient, ValidatorInterface $idTokenValidator,
-            OICResponseHandler $responseHandler, $options)
+    public function __construct(SecurityContext $securityContext,
+            HttpUtils $httpUtils, AbstractCurl $httpClient, 
+            ValidatorInterface $idTokenValidator, 
+            OICResponseHandler $responseHandler, 
+            NonceHelper $nonceHelper, $options)
     {
         $this->securityContext = $securityContext;
-        $this->session = $session;
         $this->httpUtils = $httpUtils;
         $this->httpClient = $httpClient;
         $this->idTokenValidator = $idTokenValidator;
         $this->responseHandler = $responseHandler;
+        $this->nonceHelper = $nonceHelper;
 
 
         if (array_key_exists("endpoints_url", $options)) {
@@ -82,9 +83,8 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         }
 
         $this->options = $options;
-
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -95,8 +95,8 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             'response_type' => 'code',
             'redirect_uri' => $this->httpUtils->generateUri($request, $redirectUri),
             'scope' => $this->options['scope'],
-            'nonce' => $this->setNonceInSession($request->getClientIp()),
-            'state' => $this->setNonceInSession($request->getClientIp(), "state"),
+            'nonce' => $this->nonceHelper->buildNonceValue($request->getClientIp()),
+            'state' => $this->nonceHelper->buildNonceValue($request->getClientIp(), "state"),
             'max_age' => $this->options['authentication_ttl']
         );
 
@@ -136,20 +136,28 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     {
         return $this->options['userinfo_endpoint_url'];
     }
-    
+
     /**
      * Check if user is already authenticated
      * @return TokenInterface | boolean
      */
-    public function isAuthenticated()    
+    public function isAuthenticated()
     {
+
         $token = $this->securityContext->getToken();
-        if($token !== null && $token instanceof TokenInterface) {
+
+        if ($token !== null && $token instanceof TokenInterface) {
             return $token;
         }
         return false;
     }
 
+    /**
+     * Use the code parameter set in request query for retrieve the enduser informations
+     * 
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken
+     */
     public function authenticateUser(Request $request)
     {
         $this->responseHandler->checkForError($request->query->all());
@@ -167,7 +175,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         return $oicToken;
     }
 
-
     /**
      * Call the OpenID Connect Provider to exchange a code value against an id_token and an access_token
      * 
@@ -179,8 +186,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      */
     protected function getIdTokenAndAccessToken(Request $request, OICToken $oicToken, $code)
     {
-        $this->checkStateAndNonce($request);
-
+        $this->nonceHelper->checkStateAndNonce($request);
 
         $tokenEndpointUrl = $this->getTokenEndpointUrl();
 
@@ -189,18 +195,17 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
             'code' => $code
         );
 
-        $postParameters = http_build_query($postParameters);
-        $contentLength = strlen($postParameters);
+        $postParametersQuery = http_build_query($postParameters);
 
         $headers = array(
             'User-Agent: WaldoOICRelyingPartyhBundle',
             'Content-Type: application/x-www-form-urlencoded',
-            'Content-Length: ' . $contentLength
+            'Content-Length: ' . strlen($postParametersQuery)
         );
 
         $request = new HttpClientRequest(RequestInterface::METHOD_POST, $tokenEndpointUrl);
         $request->setHeaders($headers);
-        $request->setContent($postParameters);
+        $request->setContent($postParametersQuery);
 
         $response = new HttpClientResponse();
 
@@ -209,7 +214,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $content = $this->responseHandler->handleTokenAndAccessTokenResponse($response);
 
-        // Apply validation describe here -> http://openid.net/specs/openid-connect-basic-1_0.html#IDTokenValidation
+        // Apply validation describe here: http://openid.net/specs/openid-connect-basic-1_0.html#IDTokenValidation
         if (!$this->idTokenValidator->isValid($content['id_token'])) {
             throw new OICException\InvalidIdTokenException();
         }
@@ -218,7 +223,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     }
 
     /**
-     * Call the OpenId Connect Provider to get userInfo against an access_token
+     * Call the OpenId Connect Provider to get userinfo against an access_token
      * 
      * @see http://openid.net/specs/openid-connect-basic-1_0.html#UserInfo
      * 
@@ -247,13 +252,13 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $content = $this->responseHandler->handleEndUserinfoResponse($response);
 
-
-        if ($content['sub'] === $oicToken->getIdToken()->claims['sub']) {
-            $oicToken->setRawUserinfo($content);
-            return;
+        // Check if the sub value return by the OpenID connect Provider is the 
+        // same as previous. If Not, that isn't good...
+        if ($content['sub'] !== $oicToken->getIdToken()->claims['sub']) {
+            throw new InvalidIdTokenException("The sub value is not equal");
         }
-
-        throw new InvalidIdTokenException("The sub value is not equal");
+        
+        $oicToken->setRawUserinfo($content);
     }
 
     /**
@@ -262,129 +267,5 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     public function getName()
     {
         return null;
-    }
-
-    /**
-     * Generate a nonce/state value.
-     * If rsa keys is set, the nonce value is crypted and the methode return a 
-     * JOSE_JWE object
-     * 
-     * If no rsa keys, the methode return a string
-     * 
-     * @param string $uniqueValue 
-     * @return string|\JOSE_JWE 
-     */
-    protected function generateNonce($uniqueValue)
-    {
-        $size = mcrypt_get_iv_size(MCRYPT_CAST_256, MCRYPT_MODE_CFB);
-        $hash = bin2hex(mcrypt_create_iv(12, MCRYPT_DEV_URANDOM));
-        $nonce = sprintf("%s-%s", $hash, \JOSE_URLSafeBase64::encode($uniqueValue));
-        $nonceEnc = \JOSE_URLSafeBase64::encode($nonce);
-
-        if (strlen($nonceEnc) > 255) {
-            $nonceEnc = substr($nonceEnc, 0, 254);
-        }
-
-        if ($this->options['public_rsa_path'] !== null) {
-            $publicKey = file_get_contents($this->options['public_rsa_path']);
-
-            $jweEncode = new \JOSE_JWE($nonceEnc);
-
-            $nonceEnc = $jweEncode->encrypt($publicKey);
-        }
-
-        return $nonceEnc;
-    }
-
-    /**
-     * Check if the nonce/state value is the right one
-     * 
-     * @param string $type nonce ou state
-     * @param type $uniqueValue the same as this passed to the generateNonce mehode
-     * @param type $responseNonce the nonce reply by the OpenID Connect Provider
-     * @return boolean
-     * @throws InvalidNonceException
-     */
-    protected function isNonceValid($type, $uniqueValue, $responseNonce)
-    {
-        $referenceNonce = unserialize($this->session->get("auth.oic." . $type));
-        $this->session->remove("auth.oic." . $type);
-
-        if ($referenceNonce instanceof \JOSE_JWE && $this->options['private_rsa_path'] !== null) {
-
-            $responseNonce = hex2bin($responseNonce);
-
-            if ($referenceNonce->cipher_text !== $responseNonce) {
-                throw new InvalidNonceException("Nonces values are not equal");
-            }
-
-            $privateKey = file_get_contents($this->options['private_rsa_path']);
-
-            $referenceNonce->cipher_text = $responseNonce;
-
-            try {
-                $referenceNonce->decrypt($privateKey);
-            } catch (\JOSE_Exception_DecryptionFailed $ex) {
-                throw new InvalidNonceException("Nonce cannot be decrypted");
-            }
-
-            $referenceNonce = $referenceNonce->plain_text;
-        }
-
-        $referenceNonce = \JOSE_URLSafeBase64::decode($referenceNonce);
-        
-        $referenceNonce = split("-", $referenceNonce);
-        if(count($referenceNonce) == 0) {
-            throw new InvalidNonceException("Nonce value is corrupted");
-        }
-        
-        $referenceNonce = \JOSE_URLSafeBase64::decode($referenceNonce[1]);
-
-        if ($referenceNonce !== $uniqueValue) {
-            throw new InvalidNonceException("Nonce value is corrupted");
-        }
-
-        return true;
-    }
-
-    /**
-     * this method generate a nonce/state value, store it in a session and return
-     * the string to put in http request.
-     * 
-     * @param type $uniqueValue
-     * @param type $type
-     * @return string
-     */
-    protected function setNonceInSession($uniqueValue, $type = "nonce")
-    {
-        $nonce = $this->generateNonce($uniqueValue);
-        $this->session->set("auth.oic." . $type, serialize($nonce));
-
-        if ($nonce instanceof \JOSE_JWE) {
-            return \JOSE_URLSafeBase64::encode(bin2hex($nonce->cipher_text));
-        }
-
-        return $nonce;
-    }
-
-    /**
-     * Check validity for nonce and state value
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @throws InvalidNonceException
-     */
-    protected function checkStateAndNonce(Request $request)
-    {
-        foreach (array("state", "nonce") as $type) {
-            if ($request->query->has($type)) {
-                if (!$this->isNonceValid($type, $request->getClientIp(), $request->query->get($type))) {
-                    throw new InvalidNonceException(
-                    sprintf("the %s value is not the one expected", $type)
-                    );
-                }
-            } else {
-                $this->session->remove("auth.oic." . $type);
-            }
-        }
     }
 }

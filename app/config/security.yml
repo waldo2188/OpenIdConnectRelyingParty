@@ -16,6 +16,7 @@ security:
                 always_use_default_target_path: false
                 default_target_path: /private/other
                 target_path_parameter: ~
+                login_path: /private
                 use_referer: ~
                 
     

@@ -85,5 +85,5 @@ class OICFactory extends AbstractFactory
     {
         return 'pre_auth';
     }
-   
+
 }

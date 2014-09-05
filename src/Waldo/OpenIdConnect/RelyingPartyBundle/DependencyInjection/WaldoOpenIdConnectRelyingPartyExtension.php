@@ -28,36 +28,25 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         $loader->load('services.xml');
         $loader->load('openid_connect.xml');
         $loader->load('buzz.xml');
-                
-     
+
+
         $this->constructEndpointUrl($config);
-        
-        // setup buzz client settings
-        $httpClient = $container->getDefinition('buzz.client');
-        $httpClient->addMethodCall('setVerifyPeer', array($config['http_client']['verify_peer']));
-        $httpClient->addMethodCall('setTimeout', array($config['http_client']['timeout']));
-        $httpClient->addMethodCall('setMaxRedirects', array($config['http_client']['max_redirects']));
-        $httpClient->addMethodCall('setIgnoreErrors', array($config['http_client']['ignore_errors']));
-        if (isset($config['http_client']['proxy']) && $config['http_client']['proxy'] != '') {
-            $httpClient->addMethodCall('setProxy', array($config['http_client']['proxy']));
-        }
-        $container->setDefinition('waldo_oic_rp.http_client', $httpClient);
-        
-        
+
+        $this->configureBuzz($container, $config);      
+
         $jwkHandler = $container->getDefinition('waldo_oic_rp.jwk_handler');
         $jwkHandler->replaceArgument(0, $config['jwk_url']);
         $jwkHandler->replaceArgument(1, $config['jwk_cache_ttl']);
-        
-        
+
+
         $container->getDefinition('waldo_oic_rp.validator.id_token')
-            ->replaceArgument(0, $config);
-        
+                ->replaceArgument(0, $config);
+
         $container->getDefinition('waldo_oic_rp.http_client_response_handler')
-            ->replaceArgument(1, $config);
-        
+                ->replaceArgument(1, $config);
+
         $name = 'generic';
         $this->createResoucerOwnerService($container, $name, $config);
-        
     }
 
     /**
@@ -68,26 +57,41 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         return 'waldo_oic_rp';
     }
 
+    private function configureBuzz(ContainerBuilder $container, $config)
+    {
+        // setup buzz client settings
+        $httpClient = $container->getDefinition('buzz.client');
+        $httpClient->addMethodCall('setVerifyPeer', array($config['http_client']['verify_peer']))
+                ->addMethodCall('setTimeout', array($config['http_client']['timeout']))
+                ->addMethodCall('setMaxRedirects', array($config['http_client']['max_redirects']))
+                ->addMethodCall('setIgnoreErrors', array($config['http_client']['ignore_errors']))
+        ;
+
+        if (isset($config['http_client']['proxy']) && $config['http_client']['proxy'] != '') {
+            $httpClient->addMethodCall('setProxy', array($config['http_client']['proxy']));
+        }
+
+        $container->setDefinition('waldo_oic_rp.http_client', $httpClient);
+    }
+
     /**
      * Add issuer URL to the begining of each endpoint url
      * @param array $config
      */
-    public function constructEndpointUrl(&$config)
+    private function constructEndpointUrl(&$config)
     {
-        foreach($config['endpoints_url'] as $key => $endpoint) {
+        foreach ($config['endpoints_url'] as $key => $endpoint) {
             $config['endpoints_url'][$key] = $config['issuer'] . $endpoint;
-            
         }
     }
 
-
-    public function createResoucerOwnerService(ContainerBuilder $container, $name, $config)
+    private function createResoucerOwnerService(ContainerBuilder $container, $name, $config)
     {
         $definition = new DefinitionDecorator("waldo_oic_rp.abstract_resource_owner." . $name);
         $definition->setClass("%waldo_oic_rp.resource_owner.$name.class%");
-        
+
         $container->setDefinition("waldo_oic_rp.resource_owner." . $name, $definition);
         $definition->replaceArgument(6, $config);
-        
     }
+
 }

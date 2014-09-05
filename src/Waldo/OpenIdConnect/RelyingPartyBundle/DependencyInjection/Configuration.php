@@ -48,7 +48,6 @@ class Configuration implements ConfigurationInterface
 
         $this->addHttpClientConfiguration($rootNode);
         $this->addSignatureConfiguration($rootNode);
-        $this->addCipherConfiguration($rootNode);
         
         $rootNode
             ->children()
@@ -180,16 +179,4 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
     }
-
-    private function addCipherConfiguration(ArrayNodeDefinition $node)
-    {
-        $node
-            ->children()
-                // Path to the RSA Keys
-                ->scalarNode('private_rsa_path')->defaultNull()->end()
-                ->scalarNode('public_rsa_path')->defaultNull()->end()
-            ->end()
-        ;
-    }
-    
 }
