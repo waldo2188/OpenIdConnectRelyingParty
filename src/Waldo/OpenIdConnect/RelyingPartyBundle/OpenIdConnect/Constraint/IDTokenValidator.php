@@ -63,14 +63,14 @@ class IDTokenValidator implements ValidatorInterface
          * the Client SHOULD verify that an azp Claim is present. 
          */
         $isValid &= $this->isMultipleAudienceValide($this->claims['aud']);
-        
+
         /* 4. If an azp (authorized party) Claim is present, 
          * the Client SHOULD verify that its client_id is the Claim Value.  
          */
         if(array_key_exists('azp', $this->claims)) {
             $isValid &= $this->isClientIdInAudience($this->claims['azp']);
         }
-        
+
         /* 5. The current time MUST be before the time represented by 
          * the exp Claim (possibly allowing for some small 
          * leeway to account for clock skew). 
@@ -119,7 +119,7 @@ class IDTokenValidator implements ValidatorInterface
                 return true;
             } elseif (count($aud) > 1) {
                 if(array_key_exists('azp', $this->claims)) {
-                    $this->isClientIdInAudience($this->claims['azp']);
+                    return $this->isClientIdInAudience($this->claims['azp']);
                 } else {
                     return false;
                 }

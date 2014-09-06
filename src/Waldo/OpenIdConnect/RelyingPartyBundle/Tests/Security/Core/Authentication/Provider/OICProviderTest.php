@@ -56,4 +56,29 @@ class OICProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $resultToken->getRoles());        
     }
     
+    /**
+     * @expectedException Symfony\Component\Security\Core\Exception\AuthenticationException
+     */
+    public function testAuthenticationShouldFailed()
+    {
+        $user = $this->getMock('Symfony\Component\Security\Core\User\UserInterface');
+        $user->expects($this->once())
+                ->method('getUsername')
+                ->willReturn('amy.pond');
+        
+        $userProvider = $this->getMock('Symfony\Component\Security\Core\User\UserProviderInterface');
+        $userProvider->expects($this->once())
+                ->method('loadUserByUsername')
+                ->willReturn($user);
+        
+        $token = $this->getMock('Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken');
+        $token->expects($this->exactly(2))
+                ->method('getUsername')
+                ->willReturn('rory.willialms');
+
+        $oicProvider = new OICProvider($userProvider);
+        
+        $resultToken = $oicProvider->authenticate($token);
+
+    }
 }

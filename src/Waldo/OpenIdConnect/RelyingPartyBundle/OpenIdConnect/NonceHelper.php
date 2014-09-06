@@ -37,10 +37,6 @@ class NonceHelper
         $nonce = $this->generateNonce($uniqueValue);
         $this->session->set("auth.oic." . $type, serialize($nonce));
 
-        if ($nonce instanceof \JOSE_JWE) {
-            return \JOSE_URLSafeBase64::encode(bin2hex($nonce->cipher_text));
-        }
-
         return $nonce;
     }
 
@@ -60,7 +56,9 @@ class NonceHelper
                     throw new InvalidNonceException(
                     sprintf("the %s value is not the one expected", $type)
                     );
+                    
                 }
+                
             } else {
                 $this->session->remove("auth.oic." . $type);
             }
@@ -69,13 +67,9 @@ class NonceHelper
 
     /**
      * Generate a nonce/state value.
-     * If rsa keys is set, the nonce value is crypted and the methode return a 
-     * JOSE_JWE object
-     * 
-     * If no rsa keys, the methode return a string
      * 
      * @param string $uniqueValue 
-     * @return string|\JOSE_JWE 
+     * @return string
      */
     public function generateNonce($uniqueValue)
     {
@@ -98,7 +92,6 @@ class NonceHelper
      * @param type $uniqueValue the same as this passed to the generateNonce mehode
      * @param type $responseNonce the nonce reply by the OpenID Connect Provider
      * @return boolean
-     * @throws InvalidNonceException
      */
     public function isNonceValid($type, $responseNonce)
     {
@@ -109,7 +102,7 @@ class NonceHelper
             return true;
         }
 
-        throw new InvalidNonceException("Nonce value is corrupted");
+        return false;
     }
 
 }

@@ -77,7 +77,7 @@ waldo_oic_rp:
     client_secret: my_client_secret
     issuer: "%oic_issuer%"
     display: page
-    scope: openid profile email address phone
+    scope: openid profile email phone
     authentication_ttl: 50000
     token_ttl: 50000
     userinfo_signed_response_alg: RS256

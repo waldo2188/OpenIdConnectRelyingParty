@@ -29,7 +29,6 @@ class WaldoOpenIdConnectRelyingPartyExtension extends Extension
         $loader->load('openid_connect.xml');
         $loader->load('buzz.xml');
 
-
         $this->constructEndpointUrl($config);
 
         $this->configureBuzz($container, $config);      

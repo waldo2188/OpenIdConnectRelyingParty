@@ -4,10 +4,10 @@ namespace Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner;
 
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwnerInterface;
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken;
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\User\OICUser;
+use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidIdTokenException;
+use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidRequestException;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Constraint\ValidatorInterface;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Response\OICResponseHandler;
-use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidIdTokenException;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\NonceHelper;
 use Buzz\Client\AbstractCurl;
 use Buzz\Message\Request as HttpClientRequest;
@@ -156,7 +156,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
      */
     public function authenticateUser(Request $request)
     {
-        $this->responseHandler->checkForError($request->query->all());
+        $this->responseHandler->hasError($request->query->all());
 
         $code = $request->query->get('code');
 
@@ -210,7 +210,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         // Apply validation describe here: http://openid.net/specs/openid-connect-basic-1_0.html#IDTokenValidation
         if (!$this->idTokenValidator->isValid($content['id_token'])) {
-            throw new OICException\InvalidIdTokenException();
+            throw new InvalidIdTokenException();
         }
 
         $oicToken->setRawTokenData($content);
@@ -227,7 +227,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     protected function getEndUserinfo(Request $request, OICToken $oicToken)
     {
         if ($oicToken->getAccessToken() === null) {
-            throw new OICException\InvalidRequestException("no such access_token");
+            throw new InvalidRequestException("no such access_token");
         }
 
         $headers = array(
@@ -243,7 +243,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
 
         $this->httpClient->send($request, $response);
 
-
         $content = $this->responseHandler->handleEndUserinfoResponse($response);
 
         // Check if the sub value return by the OpenID connect Provider is the 
@@ -255,11 +254,4 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $oicToken->setRawUserinfo($content);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return null;
-    }
 }

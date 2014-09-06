@@ -52,13 +52,13 @@ class OICResponseHandler
         $content = $this->getContent($response);
                 
         if($response->getStatusCode() >= Response::HTTP_BAD_REQUEST) {
-            if($bearerError = $response->getHeader("WWW-Authenticate") !== null){
+            if(($bearerError = $response->getHeader("WWW-Authenticate")) !== null){
                 preg_match ('/^Bearer error="(.*)", error_description="(.*)"$/', $bearerError, $matches);
                 $content = array('error' => $matches[1], 'error_description' => $matches[1]);                
             }
         }
 
-        if(!$this->checkForError($content)) {
+        if(!$this->hasError($content)) {
             return $content;
         }
         
@@ -158,7 +158,14 @@ class OICResponseHandler
                 $jwkSet->setJwksFromJsonObject($jwkSetJsonObject);
 
                 $jws = new \JOSE_JWS($jwt);
-                $valid = $jws->verify($jwkSet);
+                
+                try {
+                    
+                    $valid = $jws->verify($jwkSet);
+                    
+                } catch (\Exception $e) {
+                    throw new OICException\InvalidIdSignatureException($e->getMessage());                    
+                }
             }
         }
         
@@ -174,9 +181,12 @@ class OICResponseHandler
      * @throws OICException\InvalidClientOrSecretException
      * @throws OICException\UnsuportedGrantTypeException
      */
-    public function checkForError($content)
+    public function hasError($content)
     {   
-        //TODO add a log trace
+        if(!is_array($content)) {
+            return false;
+        }
+
         if(array_key_exists('error', $content)) {
             switch ($content['error']) {
                 case 'invalid request':

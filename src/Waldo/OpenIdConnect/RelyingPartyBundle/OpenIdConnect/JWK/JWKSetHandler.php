@@ -59,7 +59,7 @@ class JWKSetHandler
         $this->refreshCache();
         
         $content = file_get_contents($this->cacheDir . $this->jwkFileFolder . $this->jwkFileName);
-        
+ 
         $jsonDecode = new JsonDecode();
         $content = $jsonDecode->decode($content, JsonEncoder::FORMAT);
         
@@ -105,7 +105,6 @@ class JWKSetHandler
         $request = new HttpClientRequest(RequestInterface::METHOD_POST, $this->jwkUrl);        
         $response = new HttpClientResponse();
         $this->httpClient->send($request, $response);
-        
         
         if($response->isOk()) {
             file_put_contents($this->cacheDir . $this->jwkFileFolder . $this->jwkFileName, $response->getContent());
