@@ -141,8 +141,7 @@ class OICToken extends AbstractToken
     
     public function setRawUserinfo($rowData)
     {
-        // TODO need to build a User from a class who implement userinterface
-        $user = new OICUser($this->getUsername(), $rowData);
+        $user = new OICUser($rowData['sub'], $rowData);
         $this->userinfo = $rowData;
         $this->setUser($user);
     }

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface ResourceOwnerInterface
 {
+
     /**
      * Returns the provider's authorization url
      *
@@ -19,7 +20,33 @@ interface ResourceOwnerInterface
      *
      * @return string The authorization url
      */
-    public function getAuthenticationEndpointUrl(Request $request, $redirectUri, array $extraParameters = array());
+    public function getAuthenticationEndpointUrl(Request $request, $redirectUri = null, array $extraParameters = array());
+
+    /**
+     * 
+     * @return string The token endpoint url
+     */
+    public function getTokenEndpointUrl();
+
+    /**
+     * @return string The userinfo endpoint url
+     */
+    public function getUserinfoEndpointUrl();
+
+    /**
+     * Check if user is already authenticated
+     * 
+     * @return Symfony\Component\Security\Core\Authentication\Token\TokenInterface | boolean
+     */
+    public function isAuthenticated();
+
+    /**
+     * Use the code parameter set in request query for retrieve the enduser informations
+     * 
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken
+     */
+    public function authenticateUser(Request $request);
 
     /**
      * Return a name for the resource owner.
@@ -27,5 +54,4 @@ interface ResourceOwnerInterface
      * @return string
      */
     public function getName();
-
 }

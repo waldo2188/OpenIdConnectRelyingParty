@@ -1,6 +1,6 @@
 <?php
 
-namespace Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner;
+namespace Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect;
 
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidNonceException;
 use Symfony\Component\HttpFoundation\Request;

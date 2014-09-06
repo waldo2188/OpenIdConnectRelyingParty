@@ -155,4 +155,9 @@ class OICUser implements AdvancedUserInterface, \Serializable, EquatableInterfac
         list($this->username, $this->attributes) = $data;
     }
 
+    public function __toString()
+    {
+        return $this->getUsername();
+    }
+
 }

@@ -21,7 +21,7 @@
         
         <parameter key="waldo_oic_rp.jwk_handler.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\JWK\JWKSetHandler</parameter>
         
-        <parameter key="waldo_oic_rp.helper.nonce.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\NonceHelper</parameter>
+        <parameter key="waldo_oic_rp.helper.nonce.class">Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\NonceHelper</parameter>
     </parameters>
 
     <services>
@@ -32,7 +32,6 @@
         <service id="waldo_oic_rp.authentication.provider" class="%waldo_oic_rp.authentication.provider.class%" public="false" />
         
         <service id="waldo_oic_rp.authentication.entrypoint" class="%waldo_oic_rp.authentication.entrypoint.class%" public="false" abstract="true">
-            <argument type="service" id="http_kernel" />
             <argument type="service" id="security.http_utils" />
         </service>
         

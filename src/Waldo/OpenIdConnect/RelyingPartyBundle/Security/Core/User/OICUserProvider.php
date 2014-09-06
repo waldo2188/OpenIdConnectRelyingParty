@@ -18,9 +18,6 @@ class OICUserProvider implements UserProviderInterface
      */
     public function loadUserByUsername($username)
     {       
-        //$ex = new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
-        //$ex->setUsername($username);
-//        throw $ex;
         return new OICUser($username);
     }
 
@@ -32,9 +29,7 @@ class OICUserProvider implements UserProviderInterface
         if (!$this->supportsClass(get_class($user))) {
             throw new UnsupportedUserException(sprintf('Unsupported user class "%s"', get_class($user)));
         }
-
-        //return $this->loadUserByUsername($user->getUsername());
-        
+       
         return $user;
     }
 

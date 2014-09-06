@@ -7,7 +7,6 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * OICEntryPoint
@@ -16,11 +15,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class OICEntryPoint implements AuthenticationEntryPointInterface
 {
-    /**
-     * @var HttpKernelInterface
-     */
-    protected $httpKernel;
-
     /**
      * @var HttpUtils
      */
@@ -32,14 +26,11 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
     protected $resourceOwner;
 
     /**
-     * 
-     * @param \Symfony\Component\HttpKernel\HttpKernelInterface $kernel
      * @param \Symfony\Component\Security\Http\HttpUtils $httpUtils
      * @param \Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwnerInterface $resourceOwner
      */
-    public function __construct(HttpKernelInterface $kernel, HttpUtils $httpUtils, ResourceOwnerInterface $resourceOwner)
+    public function __construct(HttpUtils $httpUtils, ResourceOwnerInterface $resourceOwner)
     {
-        $this->httpKernel = $kernel;
         $this->httpUtils = $httpUtils;
         $this->resourceOwner = $resourceOwner;
     }
@@ -48,9 +39,9 @@ class OICEntryPoint implements AuthenticationEntryPointInterface
      * {@inheritDoc}
      */
     public function start(Request $request, AuthenticationException $authException = null)
-    {       
+    {   
         $authenticationEndpointUrl = $this->resourceOwner->getAuthenticationEndpointUrl($request);
-        
+
         //Create and return the redirection request to the OpenId Provider
         return $this->httpUtils->createRedirectResponse($request, $authenticationEndpointUrl);
     }

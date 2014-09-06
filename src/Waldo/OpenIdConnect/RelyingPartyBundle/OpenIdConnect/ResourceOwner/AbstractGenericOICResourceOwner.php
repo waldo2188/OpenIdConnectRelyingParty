@@ -8,7 +8,7 @@ use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\User\OICUser;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Constraint\ValidatorInterface;
 use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\Response\OICResponseHandler;
 use Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Exception\InvalidIdTokenException;
-use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\ResourceOwner\NonceHelper;
+use Waldo\OpenIdConnect\RelyingPartyBundle\OpenIdConnect\NonceHelper;
 use Buzz\Client\AbstractCurl;
 use Buzz\Message\Request as HttpClientRequest;
 use Buzz\Message\Response as HttpClientResponse;
@@ -138,8 +138,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     }
 
     /**
-     * Check if user is already authenticated
-     * @return TokenInterface | boolean
+     * {@inheritDoc}
      */
     public function isAuthenticated()
     {
@@ -153,10 +152,7 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
     }
 
     /**
-     * Use the code parameter set in request query for retrieve the enduser informations
-     * 
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return \Waldo\OpenIdConnect\RelyingPartyBundle\Security\Core\Authentication\Token\OICToken
+     * {@inheritDoc}
      */
     public function authenticateUser(Request $request)
     {
@@ -169,8 +165,6 @@ abstract class AbstractGenericOICResourceOwner implements ResourceOwnerInterface
         $this->getIdTokenAndAccessToken($request, $oicToken, $code);
 
         $this->getEndUserinfo($request, $oicToken);
-
-        $oicToken->setUser(new OICUser($oicToken->getUserinfo("sub"), $oicToken->getUserinfo()));
 
         return $oicToken;
     }
