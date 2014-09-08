@@ -18,6 +18,8 @@ security:
                 target_path_parameter: ~
                 login_path: /private
                 use_referer: ~
+                create_users: true
+
                 
     
     access_control:
