@@ -30,7 +30,8 @@
         "jms/security-extra-bundle": "~1.2",
         
         "kriswallsmith/buzz": "~0.7",
-        "gree/jose": "dev-master"
+        "gree/jose": ">=0.1.8",
+        "waldo/openid-connect-relying-party-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -74,6 +75,10 @@
         {
             "type": "git",
             "url": "git@github.com:waldo2188/jose.git"
+        },
+        {
+            "type": "git",
+            "url": "git@github.com:waldo2188/OpenIdConnectRelyingPartyBundle.git"
         }
     ]
 }
