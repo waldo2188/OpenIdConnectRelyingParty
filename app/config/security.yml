@@ -1,4 +1,4 @@
-security:
+security:  
     providers:
         OICUserProvider: 
             id: waldo_oic_rp.user.provider

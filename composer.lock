@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "440c4fe67c827b7ba8a9d1bc62088cc8",
+    "hash": "6706508496fde34fbfd715a889cbca13",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -631,11 +631,11 @@
         },
         {
             "name": "gree/jose",
-            "version": "dev-master",
+            "version": "0.1.7",
             "source": {
                 "type": "git",
                 "url": "git@github.com:waldo2188/jose.git",
-                "reference": "2bba5ef3d43c9cc7744a7d2cc4ecfb3dfe341439"
+                "reference": "111a6930d798115ce793d3580aa34d79b6252bba"
             },
             "require": {
                 "phpseclib/phpseclib": ">=0.3.5"
@@ -675,7 +675,7 @@
                 "JWT",
                 "OpenID Connect"
             ],
-            "time": "2014-09-03 17:21:11"
+            "time": "2014-09-06 15:50:31"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -2118,6 +2118,47 @@
                 "templating"
             ],
             "time": "2014-07-05 12:19:05"
+        },
+        {
+            "name": "waldo/openid-connect-relying-party-bundle",
+            "version": "dev-master",
+            "target-dir": "Waldo/OpenIdConnect/RelyingPartyBundle",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:waldo2188/OpenIdConnectRelyingPartyBundle.git",
+                "reference": "ba58efaf66d9b3035891f4fc5354f2c43e91b0fc"
+            },
+            "require": {
+                "gree/jose": "0.1.*",
+                "kriswallsmith/buzz": "~0.7",
+                "php": ">=5.3.3",
+                "symfony/symfony": ">=2.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.2"
+            },
+            "type": "bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "master-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Waldo\\OpenIdConnect\\RelyingPartyBundle": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Valerian Girard",
+                    "email": "waldo2188@gmail.com"
+                }
+            ],
+            "description": "OpenId Connect Relying Party Bundle",
+            "time": "2014-09-12 07:24:00"
         }
     ],
     "packages-dev": [
@@ -2483,16 +2524,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.2.4",
+            "version": "4.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "f0c2d374ad06ec1e56c721f4ed87c59ff35f440e"
+                "reference": "c3abe5953d1e60a0bf23012b1bc8c4d07f4832d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f0c2d374ad06ec1e56c721f4ed87c59ff35f440e",
-                "reference": "f0c2d374ad06ec1e56c721f4ed87c59ff35f440e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c3abe5953d1e60a0bf23012b1bc8c4d07f4832d7",
+                "reference": "c3abe5953d1e60a0bf23012b1bc8c4d07f4832d7",
                 "shasum": ""
             },
             "require": {
@@ -2553,20 +2594,20 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-08-31 06:46:49"
+            "time": "2014-09-06 18:38:27"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "42e589e08bc86e3e9bdf20d385e948347788505b"
+                "reference": "b241b18d87a47093f20fae8b0ba40379b00bd53a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/42e589e08bc86e3e9bdf20d385e948347788505b",
-                "reference": "42e589e08bc86e3e9bdf20d385e948347788505b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/b241b18d87a47093f20fae8b0ba40379b00bd53a",
+                "reference": "b241b18d87a47093f20fae8b0ba40379b00bd53a",
                 "shasum": ""
             },
             "require": {
@@ -2575,7 +2616,7 @@
                 "phpunit/php-text-template": "~1.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.2.*@dev"
+                "phpunit/phpunit": "~4.2"
             },
             "suggest": {
                 "ext-soap": "*"
@@ -2592,9 +2633,6 @@
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                ""
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
@@ -2611,7 +2649,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2014-08-02 13:50:58"
+            "time": "2014-09-06 17:32:37"
         },
         {
             "name": "sebastian/comparator",
@@ -2937,7 +2975,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "gree/jose": 20
+        "waldo/openid-connect-relying-party-bundle": 20
     },
     "prefer-stable": false,
     "platform": {
