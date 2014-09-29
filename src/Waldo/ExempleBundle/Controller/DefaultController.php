@@ -26,12 +26,7 @@ class DefaultController extends Controller
      */
     public function privateResouceAction()
     {
-        
-        echo "<pre>:";
-        var_dump($this->get('security.context')->getToken());
-        var_dump($this->get('security.context')->getToken()->getUser());
-        echo "</pre>";
-        return array();
+        return array('token' => $this->get('security.context')->getToken());
     }
     
     /**

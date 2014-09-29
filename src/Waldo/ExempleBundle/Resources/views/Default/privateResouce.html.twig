@@ -1,7 +1,31 @@
 {% extends "WaldoExempleBundle::base.html.twig" %}
 
 {% block content %}
-<h1>This is a private page</h1>
+<h1>This is a private page, that needs authentication to be accessible</h1>
 
+<h2>Token data</h2>
+
+{% if token.user.picture is not null %}<span class="pull-right"><strong>Picture :</strong><br/><img src="{{ token.user.picture }}" /></span>{% endif %}
+{% if token.user is not null %}<strong>User Sub :</strong> {{ token.user }}<br />{% endif %}
+{% if token.user.name is not null %}<strong>name :</strong> {{ token.user.name }}<br />{% endif %}
+{% if token.user.given_name is not null %}<strong>Given name :</strong> {{ token.user.given_name }}<br />{% endif %}
+{% if token.user.family_name is not null %}<strong>Family name :</strong> {{ token.user.family_name }}<br />{% endif %}
+{% if token.user.middle_name is not null %}<strong>Middle name :</strong> {{ token.user.middle_name }}<br />{% endif %}
+{% if token.user.birthdate is not null %}<strong>Birthdate :</strong> {{ token.user.birthdate|date('d/m/Y') }}<br />{% endif %}
+{% if token.user.email is not null %}<strong>Email :</strong> {{ token.user.email }}<br />{% endif %}
+{% if token.user.phone_number is not null %}<strong>Phone number :</strong> {{ token.user.phone_number }}<br />{% endif %}
+
+<strong>Roles :</strong> 
+<ul>
+{% for role in token.user.roles %}
+    <li>{{ role }}</li>
+{% endfor %}
+</ul>
+
+<br /><br />
+<h3>Raw token</h3>
+<div class="raw">
+{{ dump(token) }}
+</div>
 
 {% endblock content %}
