@@ -30,7 +30,6 @@
         "jms/security-extra-bundle": "~1.2",
         
         "kriswallsmith/buzz": "~0.7",
-        "gree/jose": ">=0.1.8",
         "waldo/openid-connect-relying-party-bundle": "dev-master"
     },
     "require-dev": {
