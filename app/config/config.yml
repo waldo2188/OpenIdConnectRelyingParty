@@ -1,6 +1,6 @@
 imports:
     - { resource: parameters.yml }
-    - { resource: myparameters.yml }
+    - { resource: parameters.yml }
     - { resource: security.yml }
 
 framework:
@@ -81,7 +81,7 @@ waldo_oic_rp:
     authentication_ttl: 50000
     token_ttl: 50000
     userinfo_signed_response_alg: RS256
-    id_token_signed_response_alg: RS512
+    id_token_signed_response_alg: RS256
     jwk_url: "%jwk_url%"
     endpoints_url: 
         authorization: "%endpoints_url_authorization%"
