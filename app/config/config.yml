@@ -77,10 +77,10 @@ waldo_oic_rp:
         verify_peer: false
     base_url: "%base_url%"
     client_id: "%client_id%"
-    client_secret: my_client_secret
+    client_secret: "xWEIKYk9vdxqy,Fp1PzE-ZTjGyG6OtszIU8t_uIFcvZlCc_epsIi2oyEriyknkbI,5dg-8XkoxAP"
     issuer: "%oic_issuer%"
     display: page
-    scope: openid profile email phone
+    scope: openid profile email phone roles
     authentication_ttl: 50000
     token_ttl: 50000
     userinfo_signed_response_alg: RS256
