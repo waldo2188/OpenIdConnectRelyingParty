@@ -5,7 +5,7 @@ namespace Waldo\ExempleBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use JMS\SecurityExtraBundle\Annotation\Secure;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DefaultController extends Controller
 {
@@ -20,7 +20,7 @@ class DefaultController extends Controller
     
     
     /**
-     * @Secure(roles="ROLE_OIC_USER")
+     * @Security("has_role('ROLE_OIC_USER')")
      * @Route("/private", name="_private_page")
      * @Template()
      */
@@ -30,7 +30,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * @Secure(roles="ROLE_OIC_USER")
+     * @Security("has_role('ROLE_OIC_USER')")
      * @Route("/private/other", name="_private_other_page")
      * @Template()
      */
