@@ -1,9 +1,10 @@
 imports:
     - { resource: parameters.yml }
-    - { resource: parameters.yml }
     - { resource: security.yml }
 
 framework:
+    session:
+        name: "oic-rp"
     #esi:             ~
     #translator:      { fallback: "%locale%" }
     secret:          "%secret%"
@@ -71,13 +72,14 @@ swiftmailer:
 
 waldo_oic_rp:
     http_client:
-        timeout: 100
+        timeout: 10
+        verify_peer: false
     base_url: "%base_url%"
     client_id: "%client_id%"
-    client_secret: my_client_secret
+    client_secret: "my_client_secret"
     issuer: "%oic_issuer%"
     display: page
-    scope: openid profile email phone
+    scope: openid profile email phone roles
     authentication_ttl: 50000
     token_ttl: 50000
     userinfo_signed_response_alg: ~

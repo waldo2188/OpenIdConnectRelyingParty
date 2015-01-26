@@ -27,8 +27,6 @@
         "sensio/distribution-bundle": "~3.0",
         "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "~2.0",
-        "jms/security-extra-bundle": "~1.2",
-        
         "kriswallsmith/buzz": "~0.7",
         "waldo/openid-connect-relying-party-bundle": "dev-master"
     },
@@ -71,6 +69,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:waldo2188/OpenIdConnectRelyingPartyBundle.git"
+        },
         {
             "type": "git",
             "url": "git@github.com:waldo2188/jose.git"
