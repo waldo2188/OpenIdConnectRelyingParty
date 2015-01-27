@@ -25,6 +25,7 @@
         <exclude name="**/catalog.xml"/> <!-- NetBeans -->
         <exclude name="vendor/**"/>
         <exclude name="app/cache/**"/>
+        <exclude name="bin/**"/>
         <exclude name="app/logs/**"/>
         <exclude name="app/build.xml"/>
         <exclude name="app/check.php"/> <!-- Symfony -->
@@ -63,12 +64,17 @@
     </target>
     
     <target name="dependencies_install" description="Common step">
-
         <echo msg="Composer install ${site_build_dir}" />
         <exec command="export SYMFONY_ENV=prod" dir="${site_build_dir}" />
         <exec command="composer install --no-dev --optimize-autoloader" dir="${site_build_dir}" />
         <exec command="rm composer.json composer.lock" dir="${site_build_dir}" />        
-        
+    </target>
+    
+    <target name="dependencies_update" description="Common step">
+        <echo msg="Composer update ${site_build_dir}" />
+        <exec command="export SYMFONY_ENV=prod" dir="${site_build_dir}" />
+        <exec command="composer update --no-dev --optimize-autoloader" dir="${site_build_dir}" />
+        <exec command="rm composer.json composer.lock" dir="${site_build_dir}" />        
     </target>
     
     <target name="assets" description="Common step">
@@ -113,6 +119,26 @@
 
         <echo msg="Création du dossier upload" />
         <mkdir dir="${site_build_dir}/upload" />
+
+        <phingcall target="compresse" />
+
+        <echo msg="Build end of" />
+    </target>
+    
+    <target name="qualif" description="Qualif">
+        <echo msg="Qualif build" />
+
+        <phingcall target="preparation" />
+        
+        <echo msg="Copie files" />
+        
+        <copy todir="${site_build_dir}">
+            <fileset refid="allowed_prod_files" />
+        </copy>
+        
+        <phingcall target="dependencies_update" />
+        
+        <phingcall target="assets" />
 
         <phingcall target="compresse" />
 
