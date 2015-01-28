@@ -1,21 +1,21 @@
 {% extends "WaldoExempleBundle::base.html.twig" %}
 
 {% block content %}
-<h1>This is a private page, that needs authentication to be accessible</h1>
+<h2>{% trans %}this_is_a_private_page_that_needs_authentication_to_be_accessible{% endtrans %}</h2>
 
-<h2>Token data</h2>
+<h3>{% trans %}token_data{% endtrans %}</h3>
 
-{% if token.user.picture|default(null) is not null %}<span class="pull-right"><strong>Picture :</strong><br/><img src="{{ token.user.picture }}" /></span>{% endif %}
-{% if token.user|default(null) is not null %}<strong>User Sub :</strong> {{ token.user }}<br />{% endif %}
-{% if token.user.name|default(null) is not null %}<strong>name :</strong> {{ token.user.name }}<br />{% endif %}
-{% if token.user.given_name|default(null) is not null %}<strong>Given name :</strong> {{ token.user.given_name }}<br />{% endif %}
-{% if token.user.family_name|default(null) is not null %}<strong>Family name :</strong> {{ token.user.family_name }}<br />{% endif %}
-{% if token.user.middle_name|default(null) is not null %}<strong>Middle name :</strong> {{ token.user.middle_name }}<br />{% endif %}
-{% if token.user.birthdate|default(null) is not null %}<strong>Birthdate :</strong> {{ token.user.birthdate|date('d/m/Y') }}<br />{% endif %}
-{% if token.user.email|default(null) is not null %}<strong>Email :</strong> {{ token.user.email }}<br />{% endif %}
-{% if token.user.phone_number|default(null) is not null %}<strong>Phone number :</strong> {{ token.user.phone_number }}<br />{% endif %}
+{% if token.user.picture|default(null) is not null %}<span class="pull-right"><img src="{{ token.user.picture }}" /><br /><strong>{% trans %}Picture{% endtrans %}</strong></span>{% endif %}
+{% if token.user|default(null) is not null %}<strong>{% trans %}Sub{% endtrans %} :</strong> {{ token.user }}<br />{% endif %}
+{% if token.user.name|default(null) is not null %}<strong>{% trans %}Name{% endtrans %} :</strong> {{ token.user.name }}<br />{% endif %}
+{% if token.user.given_name|default(null) is not null %}<strong>{% trans %}Given_name{% endtrans %} :</strong> {{ token.user.given_name }}<br />{% endif %}
+{% if token.user.family_name|default(null) is not null %}<strong>{% trans %}Family_name{% endtrans %} :</strong> {{ token.user.family_name }}<br />{% endif %}
+{% if token.user.middle_name|default(null) is not null %}<strong>{% trans %}Middle_name{% endtrans %} :</strong> {{ token.user.middle_name }}<br />{% endif %}
+{% if token.user.birthdate|default(null) is not null %}<strong>{% trans %}Birthdate{% endtrans %} :</strong> {{ token.user.birthdate|date('d/m/Y') }}<br />{% endif %}
+{% if token.user.email|default(null) is not null %}<strong>{% trans %}Email{% endtrans %} :</strong> {{ token.user.email }}<br />{% endif %}
+{% if token.user.phone_number|default(null) is not null %}<strong>{% trans %}Phone_number{% endtrans %} :</strong> {{ token.user.phone_number }}<br />{% endif %}
 
-<strong>Roles :</strong> 
+<strong>{% trans %}Roles{% endtrans %} :</strong> 
 <ul>
 {% for role in token.user.roles %}
     <li>{{ role }}</li>
@@ -23,9 +23,9 @@
 </ul>
 
 <br /><br />
-<h3>Raw token</h3>
+<h4>{% trans %}Raw_token{% endtrans %}</h4>
 <div class="raw">
-{{ dump(token) }}
+    {{ tokenRaw|raw }}
 </div>
 
 {% endblock content %}

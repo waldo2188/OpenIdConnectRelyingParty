@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>welcome_to_the_OpenID_Connect_Relying_Party_sandbox</source>
+                <target>Welcome to the OpenID Connect Relying Party Sandbox</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>this_page_doesnt_need_any_authentication</source>
+                <target>This page doesn't need any authentication.</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>click_this_link_to_go_to_a_private_page</source>
+                <target>Click this link to go to a private page</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>this_is_a_private_page_that_needs_authentication_to_be_accessible</source>
+                <target>This is a private page, that needs authentication to be accessible</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>token_data</source>
+                <target>Enduser data</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>Picture</source>
+                <target>Picture</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>Sub</source>
+                <target>Sub</target>
+            </trans-unit>
+            <trans-unit id="8">
+                <source>Name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="9">
+                <source>Given_name</source>
+                <target>Given name</target>
+            </trans-unit>
+            <trans-unit id="10">
+                <source>Family_name</source>
+                <target>Family name</target>
+            </trans-unit>
+            <trans-unit id="11">
+                <source>Middle_name</source>
+                <target>Middle name</target>
+            </trans-unit>
+            <trans-unit id="12">
+                <source>Birthdate</source>
+                <target>Birthdate</target>
+            </trans-unit>
+            <trans-unit id="13">
+                <source>Email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="14">
+                <source>Phone_number</source>
+                <target>Phone number</target>
+            </trans-unit>
+            <trans-unit id="15">
+                <source>Roles</source>
+                <target>Roles</target>
+            </trans-unit>
+            <trans-unit id="16">
+                <source>Raw_token</source>
+                <target>Raw token</target>
+            </trans-unit>
+            <trans-unit id="17">
+                <source>Other_private_page</source>
+                <target>Other private page</target>
+            </trans-unit>
+            <trans-unit id="18">
+                <source>OpenID_Connect_Relying_Party_sandbox</source>
+                <target>OpenID Connect Relying Party sandbox</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

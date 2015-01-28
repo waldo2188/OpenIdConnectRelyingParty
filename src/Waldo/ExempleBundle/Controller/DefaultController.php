@@ -26,7 +26,14 @@ class DefaultController extends Controller
      */
     public function privateResouceAction()
     {
-        return array('token' => $this->get('security.context')->getToken());
+        
+        ob_start();
+        var_dump($this->get('security.context')->getToken());
+        $tokenRaw = ob_get_clean();
+        
+        return array(
+            'token' => $this->get('security.context')->getToken(),
+            'tokenRaw' => $tokenRaw);
     }
     
     /**

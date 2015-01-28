@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="fr" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>welcome_to_the_OpenID_Connect_Relying_Party_sandbox</source>
+                <target>Bienvenue sur l'OpenID Connect Relying Party Sandbox</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>this_page_doesnt_need_any_authentication</source>
+                <target>Cette page ne nécessite pas d'authentification</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>click_this_link_to_go_to_a_private_page</source>
+                <target>Cliquer sur ce lien pour accéder à une page protégée par une authentification</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>this_is_a_private_page_that_needs_authentication_to_be_accessible</source>
+                <target>Cette page est privée, elle nécessite une authentification pour être accessible</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>token_data</source>
+                <target>Données de l'utilisateur authentifié</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>Picture</source>
+                <target>Photo</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>Sub</source>
+                <target>Sub</target>
+            </trans-unit>
+            <trans-unit id="8">
+                <source>Name</source>
+                <target>Nom</target>
+            </trans-unit>
+            <trans-unit id="9">
+                <source>Given_name</source>
+                <target>Prénom</target>
+            </trans-unit>
+            <trans-unit id="10">
+                <source>Family_name</source>
+                <target>Nom de famille</target>
+            </trans-unit>
+            <trans-unit id="11">
+                <source>Middle_name</source>
+                <target>Autre prénom</target>
+            </trans-unit>
+            <trans-unit id="12">
+                <source>Birthdate</source>
+                <target>Date d'anniversaire</target>
+            </trans-unit>
+            <trans-unit id="13">
+                <source>Email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="14">
+                <source>Phone_number</source>
+                <target>Numéro de téléphone</target>
+            </trans-unit>
+            <trans-unit id="15">
+                <source>Roles</source>
+                <target>Rôles</target>
+            </trans-unit>
+            <trans-unit id="16">
+                <source>Raw_token</source>
+                <target>Données brute de l'objet Token</target>
+            </trans-unit>
+            <trans-unit id="17">
+                <source>Other_private_page</source>
+                <target>Autre page privée</target>
+            </trans-unit>
+            <trans-unit id="18">
+                <source>OpenID_Connect_Relying_Party_sandbox</source>
+                <target>OpenID Connect Relying Party sandbox</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

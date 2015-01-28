@@ -1,10 +1,10 @@
 {% extends "WaldoExempleBundle::base.html.twig" %}
 
 {% block content %}
-<h1>Welcome to the OpenID Connect Relying Party Test</h1>
+<h2>{% trans %}welcome_to_the_OpenID_Connect_Relying_Party_sandbox{% endtrans %}</h2>
 
-<p>This page doesn't need any authentication</p>
+<p>{% trans %}this_page_doesnt_need_any_authentication{% endtrans %}</p>
 
-<p><a href="{{ path("_private_page") }}">Click this link to go to a private page</a></p>
+<p><a href="{{ path("_private_page") }}">{% trans %}click_this_link_to_go_to_a_private_page{% endtrans %}</a></p>
 
 {% endblock content %}
