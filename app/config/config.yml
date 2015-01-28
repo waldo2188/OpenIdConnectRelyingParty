@@ -6,7 +6,7 @@ framework:
     session:
         name: "oic-rp"
     #esi:             ~
-    #translator:      { fallback: "%locale%" }
+    translator:      { fallback: "%locale%" }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -51,7 +51,7 @@ waldo_oic_rp:
         verify_peer: false
     base_url: "%base_url%"
     client_id: "%client_id%"
-    client_secret: "my_client_secret"
+    client_secret: "%client_secret%"
     issuer: "%oic_issuer%"
     display: page
     scope: openid profile email phone roles

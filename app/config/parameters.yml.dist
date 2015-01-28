@@ -19,6 +19,7 @@ parameters:
     use_assetic_controller: true
     base_url: http://localhost/OpenIdConnectRelyingParty/web/app_dev.php
     client_id: my_client_id
+    client_secret: my_client_secret
     oic_issuer: http://localhost/OpenIdConnectProvider/web/app_dev.php
     jwk_url: http://localhost/OpenIdConnectProvider/web/app_dev.php/jwk/oicp.jwk
     endpoints_url_authorization: /authorize
