@@ -64,7 +64,7 @@
             </trans-unit>
             <trans-unit id="16">
                 <source>Raw_token</source>
-                <target>Données brute de l'objet Token</target>
+                <target>Données brutes de l'objet Token</target>
             </trans-unit>
             <trans-unit id="17">
                 <source>Other_private_page</source>
