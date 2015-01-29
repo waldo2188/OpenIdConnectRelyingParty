@@ -74,6 +74,10 @@
                 <source>OpenID_Connect_Relying_Party_sandbox</source>
                 <target>OpenID Connect Relying Party sandbox</target>
             </trans-unit>
+            <trans-unit id="19">
+                <source>Logout</source>
+                <target>Logout</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

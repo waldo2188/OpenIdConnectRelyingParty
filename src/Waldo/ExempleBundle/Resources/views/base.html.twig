@@ -8,8 +8,13 @@
     <body>
         <div class="container">
             <div class="page-header">
+                {% if is_granted('ROLE_OIC_USER') %}
+                    <span class="pull-right"><a href="{{ path('_oic_rp_logout') }}" class="btn btn-warning">{% trans %}Logout{% endtrans %}</a></span>
+                {% endif %}
                 <h1>{% trans %}OpenID_Connect_Relying_Party_sandbox{% endtrans %}</h1>
             </div>
+            
+            
     {% block content %}{% endblock content %}
         </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

@@ -1,3 +1,6 @@
+_oic_rp:
+    resource: "@WaldoOpenIdConnectRelyingPartyBundle/Resources/config/routing.yml"
+
 waldo_exemple:
     resource: "@WaldoExempleBundle/Controller/"
     type:     annotation
@@ -5,3 +8,4 @@ waldo_exemple:
     
 login_check:
     path: /login_check
+    

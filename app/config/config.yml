@@ -64,6 +64,7 @@ waldo_oic_rp:
         authorization: "%endpoints_url_authorization%"
         token: "%endpoints_url_token%"
         userinfo: "%endpoints_url_userinfo%"
+        logout: "%endpoints_url_logout%"
     enabled_state: false
     enabled_nonce: false
     enduserinfo_request_method: GET

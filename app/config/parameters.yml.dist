@@ -25,3 +25,4 @@ parameters:
     endpoints_url_authorization: /authorize
     endpoints_url_token: /token
     endpoints_url_userinfo: /userinfo
+    endpoints_url_logout: ~

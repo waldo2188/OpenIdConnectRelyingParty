@@ -10,7 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/")
+     * @Route("/", name="_welcome")
      * @Template()
      */
     public function indexAction()
